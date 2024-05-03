@@ -13,16 +13,16 @@ services:
     ipc: host
     privileged: true # Needed to display graphical applications
 
-  ariaNode:
-    image: base
-    network_mode: host
-    environment:
-      - ROS_MASTER_URI=http://localhost:11311
-    command: ros2 run ariaNode ariaNode -rp /dev/ttyUSB0
+  # ariaNode:
+  #   image: base
+  #   network_mode: host
+  #   environment:
+  #     - ROS_MASTER_URI=http://localhost:11311
+  #   command: ros2 run ariaNode ariaNode -rp /dev/ttyUSB0
 
-  otherNodes:
-    image: base
-    network_mode: host
-    environment:
-      - ROS_MASTER_URI=http://localhost:11311
-    command: ros2 launch otherNodes sdf.launch.py
+  # otherNodes:
+  #   image: base
+  #   network_mode: host
+  #   environment:
+  #     - ROS_MASTER_URI=http://localhost:11311
+  #   command: ros2 launch otherNodes sdf.launch.py
