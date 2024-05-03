@@ -2,6 +2,6 @@
 set -e
 
 # setup ros environment
-# source "/opt/ros/humble/setup.bash"
-source /root/.bashrc
+source "/opt/ros/humble/setup.bash"
+
 exec "$@"

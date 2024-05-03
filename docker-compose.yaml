@@ -16,17 +16,16 @@ services:
       - "/dev:/dev"
     device_cgroup_rules:
       - 'c *:* mrw'
-    command: ros2 run ariaNode ariaNode -rp /dev/ttyUSB0
-      # ariaNode:
-      #   image: base
-      #   network_mode: host
-      #   environment:
-      #     - ROS_MASTER_URI=http://localhost:11311
-      #   command: ros2 run ariaNode ariaNode -rp /dev/ttyUSB0
-
-      # otherNodes:
-      #   image: base
-      #   network_mode: host
-      #   environment:
-      #     - ROS_MASTER_URI=http://localhost:11311
-      #   command: ros2 launch otherNodes sdf.launch.py
+    command:
+  ariaNode:
+    image: base
+    network_mode: host
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+    command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
+  otherNodes:
+    image: base
+    network_mode: host
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+    command: /bin/bash -c "source ./install/setup.bash && ros2 launch sdf.launch.py"

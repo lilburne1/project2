@@ -28,12 +28,6 @@ RUN apt-get update && apt-get install -y doxygen
 # Setup scripts
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
-# Set the entry point
-COPY ./ros_entrypoint.sh /
-RUN chmod +x /ros_entrypoint.sh
-ENTRYPOINT ["ros_entrypoint.sh"]
-CMD ["bash"]
-
 WORKDIR /workspaces
 COPY ./project2 ./project2
 
@@ -42,7 +36,12 @@ RUN cd AriaCoda && make && make install
 
 WORKDIR /workspaces/project2
 
-RUN source /opt/ros/humble/setup.bash && \
-    colcon build && \
-    source ./install/setup.bash
+# Ensuring the ROS environment is properly sourced before building
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
+
+# Set the entry point and permissions
+COPY ./ros_entrypoint.sh /
+RUN chmod +x /ros_entrypoint.sh
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]
 
