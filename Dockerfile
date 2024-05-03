@@ -6,9 +6,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install necessary software for the installation of ROS2
 RUN apt-get update \
     && apt-get -y install \
+    wget \
     build-essential \
     cmake \
-    wget \
     ros-humble-navigation2 \
     ros-humble-slam-toolbox \
     ros-humble-nav2-bringup \
@@ -48,7 +48,7 @@ RUN cd AriaCoda && make && make install
 
 WORKDIR /workspaces/project2
 
-# RUN colcon build
+RUN colcon build
 RUN echo "source ./install/setup.bash"
 
 WORKDIR /workspaces/project2
