@@ -2,6 +2,7 @@ FROM osrf/ros:humble-desktop as base
 
 ENV ROS_DISTRO="humble"
 ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-c"]
 
 # Install necessary software for the installation of ROS2
 RUN apt-get update \
@@ -23,32 +24,25 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && pip3 inst
 RUN apt-get update && apt-get install -y udev
 RUN apt-get update && apt-get install -y doxygen
 
-# install -y python3-pip\
-#     python3-doxygen
-#     # python3-colcon-common-extensions \
-#     # python3-rosdep \
-#     # python3-argcomplete \
-#     # && rm -rf /var/lib/apt/lists/*rm 
 
 # Setup scripts
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
-
 # Set the entry point
 COPY ./ros_entrypoint.sh /
 RUN chmod +x /ros_entrypoint.sh
-ENTRYPOINT ["/ros_entrypoint.sh"]
+ENTRYPOINT ["ros_entrypoint.sh"]
+CMD ["bash"]
 
 WORKDIR /workspaces
 COPY ./project2 ./project2
 
-WORKDIR /workspaces/project2/src
 RUN git clone "https://github.com/reedhedges/AriaCoda.git"
 RUN cd AriaCoda && make && make install
 
 WORKDIR /workspaces/project2
 
-RUN colcon build
-RUN echo "source ./install/setup.bash"
+RUN source /opt/ros/humble/setup.bash && \
+    colcon build && \
+    source ./install/setup.bash
 
-WORKDIR /workspaces/project2
