@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true # Interactive shell
+    tty: true
+    network_mode: host # Networking and IPC for ROS 2
+    ipc: host
+    privileged: true # Needed to display graphical applications
+
+  ariaNode:
+    image: base
+    network_mode: host
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+    command: ros2 run ariaNode ariaNode -rp /dev/ttyUSB0
+
+  otherNodes:
+    image: base
+    network_mode: host
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+    command: ros2 launch otherNodes sdf.launch.py
