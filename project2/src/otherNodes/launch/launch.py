@@ -27,7 +27,12 @@ def generate_launch_description():
     controller_connection = Node(
         package="joy",
         executable="joy_node",
-        parameters=[joy_params]
+        parameters=[{
+            'device_id': 0,
+            'deadzone': 0.05,
+            'autorepeat_rate': 20.0,
+            'dev': '/dev/input/js0'
+        }]
     )
 
     # Joy tele-op node creation
@@ -35,18 +40,32 @@ def generate_launch_description():
         package="teleop_twist_joy",
         executable = "teleop_node",
         name='teleop_node',
-        params=[joy_params],
+        parameters=[{
+            'axis_linear': {
+                'x': 1
+            },
+            'scale_linear': {
+                'x': 0.5
+            },
+            'axis_angular': {
+                'yaw': 0
+            },
+            'scale_angular': {
+                'yaw': 0.5
+            },
+            'require_enable_button': False
+        }]
     )
 
-    camera = Node(
-            package='depthai_ros',  # Replace with actual package name
-            executable='oak_node',  # Replace with actual executable name
-            name='oak_camera_node',
-            parameters=[{
-                'usb_device_path': '/dev/bus/usb/003/009'  # Device USB path
-            }],
-            output='screen',
-    )
+    # camera = Node(
+    #         package='depthai_ros',  # Replace with actual package name
+    #         executable='oak_node',  # Replace with actual executable name
+    #         name='oak_camera_node',
+    #         parameters=[{
+    #             'usb_device_path': '/dev/bus/usb/003/009'  # Device USB path
+    #         }],
+    #         output='screen',
+    # )
     
     #controller = Node(
     	#package='controller',
@@ -56,5 +75,4 @@ def generate_launch_description():
     return LaunchDescription([
         controller_connection,
         controller_converter,
-        camera
     ])

@@ -10,6 +10,8 @@ RUN apt-get update \
     wget \
     build-essential \
     cmake \
+    x11-apps \
+    mesa-utils \
     ros-humble-navigation2 \
     ros-humble-slam-toolbox \
     ros-humble-depthai-ros \
@@ -29,14 +31,14 @@ RUN apt-get update && apt-get install -y doxygen
 
 # Setup scripts
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
-RUN echo "xhost -local:host" >> /root/.bashrc
+RUN echo "xhost +local:" >> /root/.bashrc
 
 WORKDIR /workspaces
-COPY ./project2 ./project2
 
 RUN git clone "https://github.com/reedhedges/AriaCoda.git"
 RUN cd AriaCoda && make && make install
 
+COPY ./project2 ./project2
 WORKDIR /workspaces/project2
 
 # Ensuring the ROS environment is properly sourced before building
