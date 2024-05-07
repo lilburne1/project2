@@ -27,16 +27,25 @@ def generate_launch_description():
     controller_connection = Node(
         package="joy",
         executable="joy_node",
-        parameters=[
-                {'dev': '/dev/input/js0'},  # Adjust this as per your joystick device
-        ]
+        parameters=[joy_params]
     )
 
     # Joy tele-op node creation
     controller_converter = Node(
         package="teleop_twist_joy",
-        executable = "teleop_twist_joy",
-        name='teleop_twist_joy_node',
+        executable = "teleop_node",
+        name='teleop_node',
+        params=[joy_params],
+    )
+
+    camera = Node(
+            package='depthai_ros',  # Replace with actual package name
+            executable='oak_node',  # Replace with actual executable name
+            name='oak_camera_node',
+            parameters=[{
+                'usb_device_path': '/dev/bus/usb/003/009'  # Device USB path
+            }],
+            output='screen',
     )
     
     #controller = Node(
@@ -47,4 +56,5 @@ def generate_launch_description():
     return LaunchDescription([
         controller_connection,
         controller_converter,
+        camera
     ])

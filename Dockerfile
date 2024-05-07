@@ -12,7 +12,7 @@ RUN apt-get update \
     cmake \
     ros-humble-navigation2 \
     ros-humble-slam-toolbox \
-    ros-humble-depthai \
+    ros-humble-depthai-ros \
     ros-humble-nav2-bringup \
     ros-humble-teleop-twist-joy \
     ros-humble-robot-state-publisher \
