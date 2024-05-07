@@ -16,16 +16,42 @@ services:
       - "/dev:/dev"
     device_cgroup_rules:
       - 'c *:* mrw'
-    command:
-  ariaNode:
-    image: base
+
+  aria_node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true
+    tty: true
     network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - "/dev:/dev"
+    device_cgroup_rules:
+      - 'c *:* mrw'
     environment:
       - ROS_MASTER_URI=http://localhost:11311
     command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
-  otherNodes:
-    image: base
+  other_nodes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true
+    tty: true
     network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - "/dev:/dev"
+    device_cgroup_rules:
+      - 'c *:* mrw'
     environment:
       - ROS_MASTER_URI=http://localhost:11311
-    command: /bin/bash -c "source ./install/setup.bash && ros2 launch sdf.launch.py"
+    command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
