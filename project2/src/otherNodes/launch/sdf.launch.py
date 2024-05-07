@@ -28,7 +28,7 @@ def generate_launch_description():
         package="joy",
         executable="joy_node",
         parameters=[
-                {'dev': '/dev/input/js1'},  # Adjust this as per your joystick device
+                {'dev': '/dev/input/js0'},  # Adjust this as per your joystick device
         ]
     )
 
