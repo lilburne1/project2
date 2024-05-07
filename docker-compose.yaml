@@ -9,10 +9,14 @@ services:
       target: base
     stdin_open: true # Interactive shell
     tty: true
+    environment:
+      - DISPLAY=host.docker.internal:0.0
+      - QT_X11_NO_MITSHM=1
     network_mode: host # Networking and IPC for ROS 2
     ipc: host
-    privileged: true # Needed to display graphical applications
+    privileged: true
     volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - "/dev:/dev"
     device_cgroup_rules:
       - 'c *:* mrw'

@@ -35,7 +35,7 @@ def generate_launch_description():
     # Joy tele-op node creation
     controller_converter = Node(
         package="teleop_twist_joy",
-        executable = "teleop_node",
+        executable = "teleop_twist_joy",
         name='teleop_twist_joy_node',
     )
     

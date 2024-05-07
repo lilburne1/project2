@@ -12,11 +12,13 @@ RUN apt-get update \
     cmake \
     ros-humble-navigation2 \
     ros-humble-slam-toolbox \
+    ros-humble-depthai \
     ros-humble-nav2-bringup \
     ros-humble-teleop-twist-joy \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
     ros-humble-joy \
+    ros-humble-rviz2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,6 +29,7 @@ RUN apt-get update && apt-get install -y doxygen
 
 # Setup scripts
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+RUN echo "xhost -local:host" >> /root/.bashrc
 
 WORKDIR /workspaces
 COPY ./project2 ./project2
