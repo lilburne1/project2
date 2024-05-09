@@ -10,16 +10,17 @@ services:
     stdin_open: true # Interactive shell
     tty: true
     environment:
-      - DISPLAY=host.docker.internal:0.0
+      - DISPLAY=:0
       - QT_X11_NO_MITSHM=1
     network_mode: host # Networking and IPC for ROS 2
     ipc: host
     privileged: true
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix
       - "/dev:/dev"
     device_cgroup_rules:
       - 'c *:* mrw'
+    command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2  rviz2"
 
   aria_node:
     build:
@@ -59,26 +60,3 @@ services:
     environment:
       - ROS_MASTER_URI=http://localhost:11311
     command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
-  visualisation:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_MASTER_URI=http://localhost:11311
-      - DISPLAY=host.docker.internal:0.0
-      - QT_X11_NO_MITSHM=1
-
-    command: /bin/bash -c "ros2 rviz rviz"

@@ -1,16 +1,3 @@
-# Copyright 2022 Open Source Robotics Foundation, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -23,10 +10,12 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    # Connection with controller
-    controller_connection = Node(
+    # Joy/teleop twist joy node creation
+    joy_params = os.path.join(get_package_share_directory('otherNodes'), 'config', 'joystick.yaml')
+    joy_node = Node(
         package="joy",
         executable="joy_node",
+        name="joy_node",
         parameters=[{
             'device_id': 0,
             'deadzone': 0.05,
@@ -35,8 +24,8 @@ def generate_launch_description():
         }]
     )
 
-    # Joy tele-op node creation
-    controller_converter = Node(
+    # Joy tele-op twist node creation
+    joy_teleop_node = Node(
         package="teleop_twist_joy",
         executable = "teleop_node",
         name='teleop_node',
@@ -57,6 +46,13 @@ def generate_launch_description():
         }]
     )
 
+    lidar_sensor = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('sick_lidar_xd'),
+                         'launch/sick_tim_7xx.launch.py')
+        )
+    )
+
     # camera = Node(
     #         package='depthai_ros',  # Replace with actual package name
     #         executable='oak_node',  # Replace with actual executable name
@@ -73,6 +69,7 @@ def generate_launch_description():
     #)
 
     return LaunchDescription([
-        controller_connection,
-        controller_converter,
+        joy_node,
+        joy_teleop_node,
+        lidar_sensor
     ])

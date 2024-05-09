@@ -11,7 +11,10 @@ RUN apt-get update \
     build-essential \
     cmake \
     x11-apps \
-    mesa-utils \
+    x11-xserver-utils \
+    x11-utils \
+    ros-humble-sick-scan-xd \
+    ros-humble-phidgets-drivers \
     ros-humble-navigation2 \
     ros-humble-slam-toolbox \
     ros-humble-depthai-ros \
