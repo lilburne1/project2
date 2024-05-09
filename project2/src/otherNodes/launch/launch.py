@@ -27,6 +27,7 @@ def generate_launch_description():
         parameters=[joy_params]
     )
 
+    # Lidar connection 
     lidar_sensor = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('sick_scan_xd'),
@@ -34,6 +35,7 @@ def generate_launch_description():
         )
     )
 
+    # IMU connection 
     imu_sensor = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('phidgets_spatial'),
@@ -41,6 +43,7 @@ def generate_launch_description():
         )
     )
 
+    # Slam toolbox connection 
     slam_toolbox = Node( 
         package='slam_toolbox', 
         executable='async_slam_toolbox_node', 
@@ -50,16 +53,15 @@ def generate_launch_description():
         output='screen',
     )
 
-    # camera = Node(
-    #         package='depthai_ros',  # Replace with actual package name
-    #         executable='oak_node',  # Replace with actual executable name
-    #         name='oak_camera_node',
-    #         parameters=[{
-    #             'usb_device_path': '/dev/bus/usb/003/009'  # Device USB path
-    #         }],
-    #         output='screen',
-    # )
-    
+    camera = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('depthai_ros_driver'),
+                         'launch/camera.launch.py')),
+            launch_arguments={
+                'usb_device_path': '/dev/bus/usb/003/009'
+            }.items()
+    ) 
+
     #controller = Node(
     	#package='controller',
     	#executable="controller",
@@ -68,6 +70,8 @@ def generate_launch_description():
     return LaunchDescription([
         joy_node,
         joy_teleop_node,
-        lidar_sensor,
-        imu_sensor
+        # lidar_sensor,
+        # imu_sensor,
+        # slam_toolbox,
+        camera
     ])
