@@ -10,7 +10,7 @@ services:
     stdin_open: true # Interactive shell
     tty: true
     environment:
-      - DISPLAY=:0
+      - DISPLAY=:1
       - QT_X11_NO_MITSHM=1
     network_mode: host # Networking and IPC for ROS 2
     ipc: host

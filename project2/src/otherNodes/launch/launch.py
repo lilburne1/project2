@@ -16,42 +16,46 @@ def generate_launch_description():
         package="joy",
         executable="joy_node",
         name="joy_node",
-        parameters=[{
-            'device_id': 0,
-            'deadzone': 0.05,
-            'autorepeat_rate': 20.0,
-            'dev': '/dev/input/js0'
-        }]
+        parameters=[joy_params]
     )
+    # {
+    #         'device_id': 0,
+    #         'deadzone': 0.05,
+    #         'autorepeat_rate': 20.0,
+    #         'dev': '/dev/input/js0'
+    #     }
 
     # Joy tele-op twist node creation
     joy_teleop_node = Node(
         package="teleop_twist_joy",
         executable = "teleop_node",
         name='teleop_node',
-        parameters=[{
-            'axis_linear': {
-                'x': 1
-            },
-            'scale_linear': {
-                'x': 0.5
-            },
-            'axis_angular': {
-                'yaw': 0
-            },
-            'scale_angular': {
-                'yaw': 0.5
-            },
-            'require_enable_button': False
-        }]
+        parameters=[joy_params]
     )
+    
+    # {
+    #         'axis_linear': {
+    #             'x': 1
+    #         },
+    #         'scale_linear': {
+    #             'x': 0.5
+    #         },
+    #         'axis_angular': {
+    #             'yaw': 0
+    #         },
+    #         'scale_angular': {
+    #             'yaw': 0.5
+    #         },
+    #         'require_enable_button': False
+    #     }
 
-    lidar_sensor = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('sick_lidar_xd'),
-                         'launch/sick_tim_7xx.launch.py')
-        )
-    )
+
+    # lidar_sensor = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(get_package_share_directory('sick_scan_xd'),
+    #                      'launch/sick_tim_7xx.launch.py')
+    #     )
+    # )
 
     # camera = Node(
     #         package='depthai_ros',  # Replace with actual package name
@@ -71,5 +75,5 @@ def generate_launch_description():
     return LaunchDescription([
         joy_node,
         joy_teleop_node,
-        lidar_sensor
+        # lidar_sensor
     ])
