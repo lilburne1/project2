@@ -22,6 +22,7 @@ RUN apt-get update \
     ros-humble-teleop-twist-joy \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
+    ros-humble-robot-localization \ 
     ros-humble-joy \
     ros-humble-rviz2 \
     && apt-get clean \
