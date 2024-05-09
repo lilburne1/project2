@@ -34,6 +34,22 @@ def generate_launch_description():
         )
     )
 
+    imu_sensor = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('phidgets_spatial'),
+                         'launch/spatial-launch.py')
+        )
+    )
+
+    slam_toolbox = Node( 
+        package='slam_toolbox', 
+        executable='async_slam_toolbox_node', 
+        parameters=[
+                get_package_share_directory('otherNodes') + '/config/mapping.yaml'
+        ], 
+        output='screen',
+    )
+
     # camera = Node(
     #         package='depthai_ros',  # Replace with actual package name
     #         executable='oak_node',  # Replace with actual executable name
@@ -52,5 +68,6 @@ def generate_launch_description():
     return LaunchDescription([
         joy_node,
         joy_teleop_node,
-        lidar_sensor
+        lidar_sensor,
+        imu_sensor
     ])

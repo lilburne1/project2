@@ -14,7 +14,7 @@ RUN apt-get update \
     x11-xserver-utils \
     x11-utils \
     ros-humble-sick-scan-xd \
-    ros-humble-phidgets-drivers \
+    ros-humble-phidgets-spatial \
     ros-humble-navigation2 \
     ros-humble-slam-toolbox \
     ros-humble-depthai-ros \
