@@ -68,6 +68,10 @@ def generate_launch_description():
         output='screen',
     )
 
+    navigation2 = Node(
+        package=''
+    )
+
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('depthai_examples'), 'launch', 'tracker_yolov4_spatial_node.launch.py')
