@@ -28,11 +28,11 @@ def generate_launch_description():
     )
 
     # Lidar connection 
-    # lidar_sensor = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(get_package_share_directory('sick_scan_xd'), 'launch', 'sick_tim_7xx.launch.py')
-    #     )
-    # )
+    lidar_sensor = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('sick_scan_xd'), 'launch', 'sick_tim_7xx.launch.py')
+        )
+    )
 
     # IMU connection 
     imu_sensor = IncludeLaunchDescription(
@@ -58,6 +58,15 @@ def generate_launch_description():
         executable='joint_state_publisher'
     )
 
+    slam_toolbox = Node( 
+        package='slam_toolbox', 
+        executable='async_slam_toolbox_node', 
+        parameters=[
+                get_package_share_directory('otherNodes') + '/config/mapping.yaml'
+        ], 
+        output='screen',
+    )
+
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('depthai_examples'), 'launch', 'tracker_yolov4_spatial_node.launch.py')
@@ -75,10 +84,10 @@ def generate_launch_description():
     return LaunchDescription([
         joy_node,
         joy_teleop_node,
-        # lidar_sensor,
-        # imu_sensor,
-        # slam_toolbox,
+        lidar_sensor,
+        imu_sensor,
+        slam_toolbox,
         joint_state_pub,
         robot_state_pub,
-        camera
+        # camera
     ])
