@@ -41,6 +41,12 @@ def generate_launch_description():
         )
     )
 
+    robot_localisation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('robot_localisation'), 'launch', 'ekf.launch.py')
+        )
+    )
+
     # urdf_file = os.path.join(get_package_share_directory('otherNodes'), 'models', 'pioneer.urdf')
     urdf_file = get_package_share_directory("otherNodes") + "/models/pioneer.urdf"
     with open(urdf_file, 'r') as infp:
@@ -66,6 +72,8 @@ def generate_launch_description():
         ], 
         output='screen',
     )
+
+
 
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
