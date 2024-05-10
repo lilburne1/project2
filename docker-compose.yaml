@@ -10,6 +10,7 @@ services:
     stdin_open: true # Interactive shell
     tty: true
     environment:
+      - ROS_DOMAIN_ID=111
       - DISPLAY=:1
       - QT_X11_NO_MITSHM=1
     network_mode: host # Networking and IPC for ROS 2
@@ -20,7 +21,7 @@ services:
       - "/dev:/dev"
     device_cgroup_rules:
       - 'c *:* mrw'
-    command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2  rviz2"
+    command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2 rviz2"
 
   # aria_node:
   #   build:
@@ -39,8 +40,11 @@ services:
   #   device_cgroup_rules:
   #     - 'c *:* mrw'
   #   environment:
+  #     - ROS_DOMAIN_ID=111
   #     - ROS_MASTER_URI=http://localhost:11311
-  #   command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 launch nav2_bringup navigation_launch.py"
+    # command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
+
   other_nodes:
     build:
       context: .
@@ -58,5 +62,27 @@ services:
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
+      - ROS_DOMAIN_ID=111
       - ROS_MASTER_URI=http://localhost:11311
     command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
+
+  imu_container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - "/dev:/dev"
+    device_cgroup_rules:
+      - 'c *:* mrw'
+    environment:
+      - ROS_DOMAIN_ID=111
+      - ROS_MASTER_URI=http://localhost:11311
+    command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"

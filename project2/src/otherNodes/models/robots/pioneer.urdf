@@ -531,11 +531,11 @@
 
   <joint name="laser_joint" type="fixed">
     <parent link="chassis" />
-    <child link="laser_frame" />
+    <child link="cloud" />
     <origin xyz="0.2 0 0.104" rpy="0 0 0"/>
   </joint>
 
-  <link name="laser_frame">
+  <link name="cloud">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>

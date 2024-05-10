@@ -10,7 +10,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-        # Joy/teleop twist joy node creation
+    # Joy/teleop twist joy node creation
     joy_params = os.path.join(get_package_share_directory('otherNodes'), 'config', 'joystick.yaml')
     joy_node = Node(
         package="joy",
@@ -34,20 +34,15 @@ def generate_launch_description():
         )
     )
 
-    # IMU connection 
-    imu_sensor = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('phidgets_spatial'), 'launch', 'spatial-launch.py')
-        )
+    robot_localization = Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node',
+            output='screen',
+            parameters=[os.path.join(get_package_share_directory("otherNodes"), 'config', 'ekf.yaml')],
     )
-
-    robot_localisation = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('robot_localisation'), 'launch', 'ekf.launch.py')
-        )
-    )
-
-    # urdf_file = os.path.join(get_package_share_directory('otherNodes'), 'models', 'pioneer.urdf')
+    
+    urdf_file = os.path.join(get_package_share_directory('otherNodes'), 'models', 'pioneer.urdf')
     urdf_file = get_package_share_directory("otherNodes") + "/models/pioneer.urdf"
     with open(urdf_file, 'r') as infp:
         robot_description = infp.read()
@@ -73,8 +68,6 @@ def generate_launch_description():
         output='screen',
     )
 
-
-
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('depthai_examples'), 'launch', 'tracker_yolov4_spatial_node.launch.py')
@@ -93,9 +86,8 @@ def generate_launch_description():
         joy_node,
         joy_teleop_node,
         lidar_sensor,
-        imu_sensor,
         slam_toolbox,
         joint_state_pub,
         robot_state_pub,
-        # camera
+        robot_localization
     ])
