@@ -68,9 +68,6 @@ def generate_launch_description():
         output='screen',
     )
 
-    navigation2 = Node(
-        package=''
-    )
 
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
