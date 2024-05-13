@@ -77,23 +77,6 @@ def generate_launch_description():
         output='screen',
     )
 
-    # diff_drive_control = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=['diff_drive_controller'],
-    #     parameters=[
-    #         get_package_share_directory('otherNodes') + '/config/diff_drive_controller.yaml'
-    #     ],
-    # )
-
-    # diff_drive_control = Node(
-    #     package='diff_drive_controller',
-    #     executable='diff_drive_controller',
-    #     parameters=[
-    #             get_package_share_directory('otherNodes') + '/config/diff_drive_controller.yaml'
-    #     ]
-    # )
-
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('depthai_examples'), 'launch', 'tracker_yolov4_spatial_node.launch.py')
@@ -103,10 +86,10 @@ def generate_launch_description():
     #     }.items()
     # )
 
-    #controller = Node(
-    	#package='controller',
-    	#executable="controller",
-    #)
+    # controller = Node(
+    # 	package='controller',
+    # 	executable="controller",
+    # )
 
     return LaunchDescription([
         joy_node,
@@ -115,5 +98,5 @@ def generate_launch_description():
         slam_toolbox,
         joint_state_pub,
         robot_state_pub,
-        robot_localization
+        robot_localization,
     ])
