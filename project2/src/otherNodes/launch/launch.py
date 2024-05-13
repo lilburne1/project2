@@ -10,7 +10,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    # Joy/teleop twist joy node creation
+    # # Joy/teleop twist joy node creation
     joy_params = os.path.join(get_package_share_directory('otherNodes'), 'config', 'joystick.yaml')
     joy_node = Node(
         package="joy",
