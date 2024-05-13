@@ -53,13 +53,19 @@ def generate_launch_description():
     robot_state_pub = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        parameters=[{'robot_description': robot_description}]
+        parameters=[{
+            'robot_description': robot_description,
+            'use_sim_time': False
+        }]
     )
 
     # TF Transform for joint publisher
     joint_state_pub = Node(
         package='joint_state_publisher',
-        executable='joint_state_publisher'
+        executable='joint_state_publisher',
+        parameters=[{
+            'use_sim_time': False
+        }]
     )
 
     slam_toolbox = Node( 
@@ -71,17 +77,22 @@ def generate_launch_description():
         output='screen',
     )
 
-    diff_drive_control = Node(
-            package='controller_manager',
-            executable='spawner',
-            arguments=['diff_drive_controller', '--controller-manager', '/controller_manager'],
-            output='screen',
-            parameters=[
-                get_package_share_directory('otherNodes') + '/config/diff_drive_controller.yaml'
-            ]
-    )
+    # diff_drive_control = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=['diff_drive_controller'],
+    #     parameters=[
+    #         get_package_share_directory('otherNodes') + '/config/diff_drive_controller.yaml'
+    #     ],
+    # )
 
-
+    # diff_drive_control = Node(
+    #     package='diff_drive_controller',
+    #     executable='diff_drive_controller',
+    #     parameters=[
+    #             get_package_share_directory('otherNodes') + '/config/diff_drive_controller.yaml'
+    #     ]
+    # )
 
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
@@ -104,6 +115,5 @@ def generate_launch_description():
         slam_toolbox,
         joint_state_pub,
         robot_state_pub,
-        robot_localization,
-        diff_drive_control
+        robot_localization
     ])

@@ -1,12 +1,12 @@
 version: "3.9"
 services:
-  base:
+  ros_base:
+    container_name: ros_base
     build:
       context: .
       dockerfile: Dockerfile
       args:
         ROS_DISTRO: humble
-      target: base
     stdin_open: true # Interactive shell
     tty: true
     environment:
@@ -19,30 +19,35 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - "/dev:/dev"
+      - type: bind
+        source: /dev/shm
+        target: /dev/shm
     device_cgroup_rules:
       - 'c *:* mrw'
     command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2 rviz2"
 
-  # aria_node:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     args:
-  #       ROS_DISTRO: humble
-  #     target: base
-  #   stdin_open: true
-  #   tty: true
-  #   network_mode: host
-  #   ipc: host
-  #   privileged: true
-  #   volumes:
-  #     - "/dev:/dev"
-  #   device_cgroup_rules:
-  #     - 'c *:* mrw'
-  #   environment:
-  #     - ROS_DOMAIN_ID=111
-  #     - ROS_MASTER_URI=http://localhost:11311
-  #   command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
+  aria_node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - "/dev:/dev"
+      - type: bind
+        source: /dev/shm
+        target: /dev/shm
+    device_cgroup_rules:
+      - 'c *:* mrw'
+    environment:
+      - ROS_DOMAIN_ID=111
+    command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
 
   other_nodes:
     build:
@@ -58,11 +63,13 @@ services:
     privileged: true
     volumes:
       - "/dev:/dev"
+      - type: bind
+        source: /dev/shm
+        target: /dev/shm
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
       - ROS_DOMAIN_ID=111
-      - ROS_MASTER_URI=http://localhost:11311
     command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
 
   imu_container:
@@ -79,32 +86,11 @@ services:
     privileged: true
     volumes:
       - "/dev:/dev"
+      - type: bind
+        source: /dev/shm
+        target: /dev/shm
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
       - ROS_DOMAIN_ID=111
-      - ROS_MASTER_URI=http://localhost:11311
     command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"
-
-  view2_container:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-      - DISPLAY=:1
-      - QT_X11_NO_MITSHM=1
-      - ROS_MASTER_URI=http://localhost:11311
-    command: /bin/bash -c "rqt_graph"

@@ -4,5 +4,7 @@ diff_drive_controller:
   right_wheel_names: ["p3at_back_right_wheel_joint", "p3at_front_right_wheel_joint"]
   wheel_separation: 0.268
   wheel_radius: 0.111
-  publish_rate: 20
+  publish_rate: 30
   odom_frame_id: "odom"
+  enable_odom_tf: false
+  position_feedback: false
