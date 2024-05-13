@@ -13,6 +13,7 @@ setup(
         ('share/' + package_name + '/launch', ['launch/launch.py']),
         ('share/' + package_name + '/config', ['config/joystick.yaml']),
         ('share/' + package_name + '/config', ['config/ekf.yaml']),
+        ('share/' + package_name + '/config', ['config/diff_drive_controller.yaml']),
         ('share/' + package_name + '/models', ['models/robots/pioneer.urdf'])
     ],
     install_requires=['setuptools'],

@@ -71,6 +71,17 @@ def generate_launch_description():
         output='screen',
     )
 
+    diff_drive_control = Node(
+            package='controller_manager',
+            executable='spawner',
+            arguments=['diff_drive_controller', '--controller-manager', '/controller_manager'],
+            output='screen',
+            parameters=[
+                get_package_share_directory('otherNodes') + '/config/diff_drive_controller.yaml'
+            ]
+    )
+
+
 
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
@@ -93,5 +104,6 @@ def generate_launch_description():
         slam_toolbox,
         joint_state_pub,
         robot_state_pub,
-        robot_localization
+        robot_localization,
+        diff_drive_control
     ])

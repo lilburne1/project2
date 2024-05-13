@@ -14,6 +14,7 @@ RUN apt-get update \
     x11-xserver-utils \
     x11-utils \
     ros-humble-tf2-tools \
+    ros-humble-diff-drive-controller \
     ros-humble-rqt-graph \
     ros-humble-sick-scan-xd \
     ros-humble-phidgets-spatial \

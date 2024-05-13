@@ -1,0 +1,8 @@
+diff_drive_controller:
+  type: diff_drive_controller/DiffDriveController
+  left_wheel_names: ["p3at_front_left_wheel_joint", "p3at_back_left_wheel_joint"]
+  right_wheel_names: ["p3at_back_right_wheel_joint", "p3at_front_right_wheel_joint"]
+  wheel_separation: 0.268
+  wheel_radius: 0.111
+  publish_rate: 20
+  odom_frame_id: "odom"
