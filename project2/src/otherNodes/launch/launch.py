@@ -77,6 +77,17 @@ def generate_launch_description():
         output='screen',
     )
 
+    navigation_config_file = get_package_share_directory('otherNodes') + '/config/navigation.yaml'
+    nav2_launch_file = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'navigation_launch.py')
+        ),
+        launch_arguments={
+            'params_file': navigation_config_file
+        }.items()
+    )
+
+
     # camera = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('depthai_examples'), 'launch', 'tracker_yolov4_spatial_node.launch.py')
