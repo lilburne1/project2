@@ -14,7 +14,7 @@ slam_toolbox:
     base_frame: base_link
     scan_topic: /scan
     use_map_saver: true
-    mode: mapping #localization
+    mode: localization
     use_sim_time: false
 
     # if you'd like to immediately start continuing a map at a given pose
