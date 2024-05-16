@@ -77,8 +77,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    dead_man_switch = Node(
+        package="otherNodes",
+        executable='dead_switch'
+    )
+
     navigation_config_file = get_package_share_directory('otherNodes') + '/config/navigation.yaml'
-    nav2_launch_file = IncludeLaunchDescription(
+    nav2_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'navigation_launch.py')
         ),
@@ -97,11 +102,6 @@ def generate_launch_description():
     #     }.items()
     # )
 
-    # controller = Node(
-    # 	package='controller',
-    # 	executable="controller",
-    # )
-
     return LaunchDescription([
         joy_node,
         joy_teleop_node,
@@ -110,4 +110,6 @@ def generate_launch_description():
         joint_state_pub,
         robot_state_pub,
         robot_localization,
+        nav2_launch,
+        dead_man_switch
     ])

@@ -26,7 +26,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'controller = otherNodes.controller:main'
+            'dead_switch = otherNodes.dead_switch:main'
         ],
     },
 )

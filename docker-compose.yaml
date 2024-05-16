@@ -94,26 +94,25 @@ services:
     environment:
       - ROS_DOMAIN_ID=111
     command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"
-
-  navigation_container:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "ros2 launch navigation2 navigation_launch.py"
+  # navigation_container:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #   command: /bin/bash -c "ros2 launch navigation2 navigation_launch.py"
