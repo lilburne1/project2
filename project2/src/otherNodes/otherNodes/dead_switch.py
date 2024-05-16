@@ -77,7 +77,7 @@ class DeadManSwitch(Node):
 
 def main(args = None):
     rclpy.init(args=args)
-    dead_man_switch == DeadManSwitch()
+    dead_man_switch = DeadManSwitch()
     rlcpy.spin(dead_man_switch)
 
     dead_man_switch.destroy_node()

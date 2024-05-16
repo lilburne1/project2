@@ -24,7 +24,10 @@ def generate_launch_description():
         package="teleop_twist_joy",
         executable="teleop_node",
         name='teleop_node',
-        parameters=[joy_params]
+        parameters=[joy_params],
+        remapping = [
+            ('/cmd_vel', '/cmd_vel_joy')
+        ]
     )
 
     # Lidar connection 
@@ -91,6 +94,14 @@ def generate_launch_description():
             'params_file': navigation_config_file
         }.items()
     )
+
+
+    # launch.LaunchDescription([
+    #     launch.actions.ExecuteProcess(
+    #         cmd=['ros2', 'bag', 'record', '-a'],
+    #         output='screen'
+    #     )
+    # ])
 
 
     # camera = IncludeLaunchDescription(
