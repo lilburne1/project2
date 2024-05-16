@@ -43,8 +43,10 @@ class DeadManSwitch(Node):
         
     def button_press_callback(self, msg):
         # Dead man's switch for robot
-        if (msg.buttons[9] != 1 or msg.buttons[10] != 1):
-             self.dead_man_switch = False
+        # if (msg.buttons[0] == 1 or msg.buttons[0] == 1):
+        #      self.dead_man_switch = True
+        # else:
+        #     self.dead_man_switch = False
 
         # Controls state of robots - either AUTO or MANUAL
         if msg.buttons[0] == 1 and self.drive_state != "AUTO":
@@ -54,13 +56,13 @@ class DeadManSwitch(Node):
             self.drive_state = "MANUAL"
 
     def nav_vel_callback(self, msg):
-        if not self.dead_man_switch and self.drive_state == "AUTO":
+        if self.dead_man_switch and self.drive_state == "AUTO":
             self.cmd_vel_publisher.publish(msg)
         else:
             self.publish_stop_message()
 
     def joy_vel_callback(self, msg):
-        if not self.dead_man_switch and self.drive_state == "MANUAL":
+        if self.dead_man_switch and self.drive_state == "MANUAL":
             self.cmd_vel_publisher.publish(msg)
         else:
             self.publish_stop_message()
