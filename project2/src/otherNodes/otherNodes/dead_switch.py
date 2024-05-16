@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import rlcpy
-from rlcpy.node import Node
+import rclpy
+from rclpy.node import Node
 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import String
@@ -43,24 +43,24 @@ class DeadManSwitch(Node):
         
     def button_press_callback(self, msg):
         # Dead man's switch for robot
-        if (msg.button[9] != 1 or msg.button[10] != 1):
+        if (msg.buttons[9] != 1 or msg.buttons[10] != 1):
              self.dead_man_switch = False
 
         # Controls state of robots - either AUTO or MANUAL
-        if msg.buttons[0] == 1 and self.state != "AUTO":
-            self.state = "AUTO"
+        if msg.buttons[0] == 1 and self.drive_state != "AUTO":
+            self.drive_state = "AUTO"
             
-        elif msg.buttons[1] == 1 and self.state != "MANUAL":
-            self.state = "MANUAL"
+        elif msg.buttons[1] == 1 and self.drive_state != "MANUAL":
+            self.drive_state = "MANUAL"
 
     def nav_vel_callback(self, msg):
-        if not self.dead_man_switch and self.state == "AUTO":
+        if not self.dead_man_switch and self.drive_state == "AUTO":
             self.cmd_vel_publisher.publish(msg)
         else:
             self.publish_stop_message()
 
     def joy_vel_callback(self, msg):
-        if not self.dead_man_switch and self.state == "MANUAL":
+        if not self.dead_man_switch and self.drive_state == "MANUAL":
             self.cmd_vel_publisher.publish(msg)
         else:
             self.publish_stop_message()
@@ -78,7 +78,7 @@ class DeadManSwitch(Node):
 def main(args = None):
     rclpy.init(args=args)
     dead_man_switch = DeadManSwitch()
-    rlcpy.spin(dead_man_switch)
+    rclpy.spin(dead_man_switch)
 
     dead_man_switch.destroy_node()
     rclpy.shutdown()
