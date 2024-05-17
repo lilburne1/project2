@@ -1,28 +1,27 @@
 import rclpy
 from rclpy.node import Node
-from nav2_simple_commander.robot_navigator import BasicNavigator, NavigationResult
+from nav2_simple_commander.robot_navigator import BasicNavigator
 
 class Explorer(Node):
     def __init__(self):
         super().__init__('explorer')
         self.navigator = BasicNavigator()
-
-    def explore(self):
-        # Wait for Nav2 to fully activate
         self.navigator.waitUntilNav2Active()
+        self.navigator.goToPose((1.0, 1.0))
+        result = self.navigator.waitUntilNav2GoalAchieved()
 
         # Define some waypoints to explore
-        waypoints = [
-            (1.0, 1.0),
-            (1.0, -1.0),
-            (-1.0, -1.0),
-            (-1.0, 1.0)
-        ]
+        # waypoints = [
+        #     (1.0, 1.0),
+        #     (1.0, -1.0),
+        #     (-1.0, -1.0),
+        #     (-1.0, 1.0)
+        # ]
 
-        # Visit each waypoint
-        for waypoint in waypoints:
-            self.navigator.goToPose(waypoint)
-            result = self.navigator.waitUntilNav2GoalAchieved()
+        # # Visit each waypoint
+        # for waypoint in waypoints:
+        #     self.navigator.goToPose(waypoint)
+        #     result = self.navigator.waitUntilNav2GoalAchieved()
 
 def main(args = None):
     rclpy.init(args=args)

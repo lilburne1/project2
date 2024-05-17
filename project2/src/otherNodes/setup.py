@@ -18,7 +18,7 @@ setup(
         ('share/' + package_name + '/config', ['config/navigation.yaml']),
         ('share/' + package_name + '/models', ['models/robots/pioneer.urdf'])
     ],
-    install_requires=['setuptools', 'rclpy'],
+    install_requires=['setuptools', 'rclpy', "nav2_simple_commander"],
     zip_safe=True,
     maintainer='ben',
     maintainer_email='benlilburne@outlook.com',
