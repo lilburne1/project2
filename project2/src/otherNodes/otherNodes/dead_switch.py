@@ -6,7 +6,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
-from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
 
 class DeadManSwitch(Node):
     def __init__(self):
@@ -40,14 +40,14 @@ class DeadManSwitch(Node):
         )
 
         self.imu_subscription = self.create_subscription(
-            Odometry,
+            Imu,
             "/imu/data_raw",
             self.imu_republish,
             10
         )
 
         self.cmd_vel_publisher = self.create_publisher(Twist, "cmd_vel", 10)
-        self.imu_publisher = self.create_publisher(Odometry, "imu", 10)
+        self.imu_publisher = self.create_publisher(Imu, "imu", 10)
 
         
     def button_press_callback(self, msg):
@@ -87,7 +87,7 @@ class DeadManSwitch(Node):
         self.cmd_vel_publisher.publish(stop_msg)
 
     def imu_republish(self, msg):
-        msg.angular_velocity *= 1 
+        msg.angular_velocity *= -1 
         self.imu_publisher.publish(msg)
 
 def main(args = None):
