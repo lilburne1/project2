@@ -11,6 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/launch.py']),
+        ('share/' + package_name + '/launch', ['launch/navigation.launch.py']),
         ('share/' + package_name + '/config', ['config/joystick.yaml']),
         ('share/' + package_name + '/config', ['config/ekf.yaml']),
         ('share/' + package_name + '/config', ['config/mapping.yaml']),
@@ -26,7 +27,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'dead_switch = otherNodes.dead_switch:main'
+            'dead_switch = otherNodes.dead_switch:main',
+            'explorer = otherNodes.explorer:main'
         ],
     },
 )

@@ -85,17 +85,6 @@ def generate_launch_description():
         executable='dead_switch'
     )
 
-    # navigation_config_file = get_package_share_directory('otherNodes') + '/config/navigation.yaml'
-    # nav2_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'navigation_launch.py')
-    #     ),
-    #     launch_arguments={
-    #         'params_file': navigation_config_file
-    #     }.items()
-    # )
-
-
     # launch.LaunchDescription([
     #     launch.actions.ExecuteProcess(
     #         cmd=['ros2', 'bag', 'record', '-a'],
@@ -121,6 +110,5 @@ def generate_launch_description():
         joint_state_pub,
         robot_state_pub,
         robot_localization,
-        # nav2_launch,
-        dead_man_switch
+        dead_man_switch,
     ])
