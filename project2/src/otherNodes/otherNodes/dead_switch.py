@@ -39,17 +39,17 @@ class DeadManSwitch(Node):
             10
         )
 
-        self.imu_subscription = self.create_subscription(
+        self.imu_sub = self.create_subscription(
             Imu,
             "/imu/data_raw",
-            self.imu_republish,
+            self.imu_repub,
             10
         )
 
         self.cmd_vel_publisher = self.create_publisher(Twist, "cmd_vel", 10)
-        self.imu_publisher = self.create_publisher(Imu, "imu", 10)
 
-        
+        self.imu_pub = self.create_publisher(Imu, "transformed_imu", 10)
+
     def button_press_callback(self, msg):
         # Dead man's switch for robot
         # if (msg.buttons[0] == 1 or msg.buttons[0] == 1):
@@ -86,9 +86,9 @@ class DeadManSwitch(Node):
         stop_msg.angular.z = 0.0
         self.cmd_vel_publisher.publish(stop_msg)
 
-    def imu_republish(self, msg):
-        msg.angular_velocity *= -1 
-        self.imu_publisher.publish(msg)
+    def imu_repub(self, msg):
+        msg.angular_velocity.z *= -1 
+        self.imu_pub.publish(msg)
 
 def main(args = None):
     rclpy.init(args=args)
