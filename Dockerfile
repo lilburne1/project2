@@ -20,6 +20,7 @@ RUN apt-get update \
     ros-humble-sick-scan-xd \
     ros-humble-phidgets-spatial \
     ros-humble-navigation2 \
+    ros-humble-nav2-amcl \ 
     ros-humble-slam-toolbox \
     ros-humble-depthai-ros \
     ros-humble-nav2-bringup \

@@ -1,12 +1,14 @@
 import rclpy
 from rclpy.node import Node
 from nav2_simple_commander.robot_navigator import BasicNavigator
+from geometry_msgs.msg import Pose
 
 class Explorer(Node):
     def __init__(self):
         super().__init__('explorer')
+        self.create_publisher()
         self.navigator = BasicNavigator()
-        self.navigator.waitUntilNav2Active()
+        self.navigator.waitUntilNav2Active(localizer="robot_localization")
         self.navigator.goToPose((1.0, 1.0))
         result = self.navigator.waitUntilNav2GoalAchieved()
 
