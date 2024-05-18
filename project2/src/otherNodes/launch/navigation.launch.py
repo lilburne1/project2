@@ -19,12 +19,12 @@ def generate_launch_description():
         }.items(),
     )
 
-    explorer = Node(
-        package="otherNodes",
-        executable='explorer'
-    )
+    # explorer = Node(
+    #     package="otherNodes",
+    #     executable='explorer'
+    # )
     
     return LaunchDescription([
-        nav2_launch,
-        explorer
+        nav2_launch
+        # explorer
     ])
