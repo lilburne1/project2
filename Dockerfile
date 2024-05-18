@@ -26,6 +26,7 @@ RUN apt-get update \
     ros-humble-nav2-bringup \
     ros-humble-nav2-simple-commander \
     ros-humble-teleop-twist-joy \
+    ros-humble-rmw-cyclonedds-cpp \ 
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
     ros-humble-robot-localization \ 

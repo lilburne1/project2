@@ -1,6 +1,27 @@
-import cv2
-import numpy as np
-import tensorflow as tf
+import rclpy
+from rclpy.node import Node
+from sensor_msgs import Image
+
+class ConeDetection(Node):
+    def __init__(self):
+
+
+def main(args = None):
+    rclpy.init(args=args)
+    explorer = Explorer()
+    rclpy.spin(explorer)
+
+    explorer.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
 
 # globals
 field_of_view = 80
@@ -8,21 +29,6 @@ resolution_width = 1280
 # resolution_height = 0
 pixels_per_degree = resolution_width / field_of_view
 
-# test
-
-# # Load pre-trained model
-# model = tf.keras.models.load_model('model.h5')
-print("Loaded pre-trained model.")
-
-# # Predict digit using image passed in
-# def predict(model, img):
-#     img = np.expand_dims(img, axis=0)
-#     img = np.expand_dims(img, axis=-1)  # Add channel dimension
-#     img = img.astype('float32') / 255.0  # Normalize
-#     res = model.predict(img)
-#     confidence = np.max(res)
-#     predicted_digit = np.argmax(res)
-#     return predicted_digit, confidence
 
 # Find clusters of dark pixels with white pixels around them
 def find_clusters(image):

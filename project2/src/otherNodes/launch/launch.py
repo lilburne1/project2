@@ -31,11 +31,11 @@ def generate_launch_description():
     )
 
     # Lidar connection 
-    lidar_sensor = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('sick_scan_xd'), 'launch', 'sick_tim_7xx.launch.py')
-        ),
-    )
+    # lidar_sensor = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(get_package_share_directory('sick_scan_xd'), 'launch', 'sick_tim_7xx.launch.py')
+    #     ),
+    # )
 
     robot_localization = Node(
             package='robot_localization',
@@ -71,14 +71,14 @@ def generate_launch_description():
         }]
     )
 
-    slam_toolbox = Node( 
-        package='slam_toolbox', 
-        executable='async_slam_toolbox_node', 
-        parameters=[
-                get_package_share_directory('otherNodes') + '/config/mapping.yaml'
-        ], 
-        output='screen',
-    )
+    # slam_toolbox = Node( 
+    #     package='slam_toolbox', 
+    #     executable='async_slam_toolbox_node', 
+    #     parameters=[
+    #             get_package_share_directory('otherNodes') + '/config/mapping.yaml'
+    #     ], 
+    #     output='screen',
+    # )
 
     dead_man_switch = Node(
         package="otherNodes",
@@ -105,8 +105,8 @@ def generate_launch_description():
     return LaunchDescription([
         joy_node,
         joy_teleop_node,
-        lidar_sensor,
-        slam_toolbox,
+        # lidar_sensor,
+        # slam_toolbox,
         joint_state_pub,
         robot_state_pub,
         robot_localization,
