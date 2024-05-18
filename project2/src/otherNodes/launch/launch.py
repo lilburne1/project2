@@ -93,14 +93,14 @@ def generate_launch_description():
     # ])
 
 
-    # camera = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(get_package_share_directory('depthai_examples'), 'launch', 'tracker_yolov4_spatial_node.launch.py')
-    #     ),
-    #     launch_arguments={
-    #         'usb_device_path': '/dev/bus/usb/003/009'
-    #     }.items()
-    # )
+    camera = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('depthai_ros_driver'), 'launch', 'camera.launch.py')
+        ),
+        launch_arguments={
+            'usb_device_path': '/dev/bus/usb/003/009'
+        }.items()
+    )
 
     return LaunchDescription([
         joy_node,

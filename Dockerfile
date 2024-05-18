@@ -39,6 +39,9 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && pip3 inst
 RUN apt-get update && apt-get install -y udev
 RUN apt-get update && apt-get install -y doxygen
 
+RUN pip3 install numpy
+RUN pip3 install opencv-python
+RUN pip3 install cv_bridge
 
 # Setup scripts
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc

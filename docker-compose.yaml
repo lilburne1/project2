@@ -11,7 +11,7 @@ services:
     tty: true
     environment:
       - ROS_DOMAIN_ID=111
-      - DISPLAY=:1
+      - DISPLAY=:3
       - QT_X11_NO_MITSHM=1
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     network_mode: host # Networking and IPC for ROS 2
@@ -27,77 +27,77 @@ services:
       - 'c *:* mrw'
     command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2 rviz2"
 
-  aria_node:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
+  # aria_node:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
 
-  other_nodes:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
+  # other_nodes:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
 
-  imu_container:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"
+  # imu_container:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"
   # navigation_container:
   #   build:
   #     context: .
@@ -121,3 +121,26 @@ services:
   #     - ROS_DOMAIN_ID=111
   #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
   #   command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes navigation.launch.py"
+  navigation_container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - "/dev:/dev"
+      - type: bind
+        source: /dev/shm
+        target: /dev/shm
+    device_cgroup_rules:
+      - 'c *:* mrw'
+    environment:
+      - ROS_DOMAIN_ID=111
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes camera.launch.py"
