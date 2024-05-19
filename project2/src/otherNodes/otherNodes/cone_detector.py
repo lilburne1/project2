@@ -5,6 +5,9 @@ import cv2
 from cv_bridge import CvBridge
 import numpy as np
 
+import geometry_msgs.msg import PoseWithCovarianceStamped
+import nav_msgs.msg import OccupancyGrid
+
 class ConeDetector(Node):
     def __init__(self):
         super().__init__("cone_detector")
@@ -17,6 +20,8 @@ class ConeDetector(Node):
             10
         )
 
+        self.
+
         self.bridge = CvBridge()
 
     def detect_cone(self, msg):
@@ -26,20 +31,25 @@ class ConeDetector(Node):
         hsv_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2HSV)
         
         # Defining lower and upper bound HSV values 
-        lower_red_1 = np.array([0, 100, 100])
-        upper_red_1 = np.array([10, 255, 255])
+        lower_red1 = np.array([0, 120, 70])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([170, 120, 70])
+        upper_red2 = np.array([180, 255, 255])
 
-        lower_red_2 = np.array([170, 100, 100])
-        upper_red_2 = np.array([180, 255, 255])
-    
+        # Create masks for red color ranges
+        red_mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+        red_mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
 
-        # Defining mask for detecting color 
-        binary1 = cv2.inRange(hsv_image, lower_red_1, upper_red_1) 
-        red_count1 = np.count_nonzero(binary1)
-        self.get_logger().info(str(red_count1))
-        binary2 = cv2.inRange(hsv_image, lower_red_2, upper_red_2)
-        red_count = np.count_nonzero(binary2)
-        self.get_logger().info(str(red_count))
+        # Combine masks
+        mask = cv2.bitwise_or(red_mask1, red_mask2)
+
+         # Find connected components in the mask
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+
+        for i in range(1, num_labels):  
+            area = stats[i, cv2.CC_STAT_AREA]
+            if area > 8000:
+
 
             
 def main(args = None):

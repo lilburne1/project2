@@ -94,6 +94,9 @@ class DeadManSwitch(Node):
         stop_msg.angular.z = 0.0
         self.cmd_vel_publisher.publish(stop_msg)
 
+        twist_cov_msg = self.create_twist_with_covariance(stop_msg)
+        self.robot_twist_publisher.publish(twist_cov_msg)
+
     def imu_repub(self, msg):
         msg.angular_velocity.z *= -1 
         self.imu_pub.publish(msg)
