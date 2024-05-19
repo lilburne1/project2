@@ -5,7 +5,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, TwistWithCovarianceStamped
 from sensor_msgs.msg import Imu
 
 class DeadManSwitch(Node):
@@ -47,6 +47,7 @@ class DeadManSwitch(Node):
         )
 
         self.cmd_vel_publisher = self.create_publisher(Twist, "cmd_vel", 10)
+        self.robot_twist_publisher = self.create_publisher(TwistWithCovarianceStamped, "robot_twist", 10)
 
         self.imu_pub = self.create_publisher(Imu, "transformed_imu", 10)
 
@@ -67,12 +68,19 @@ class DeadManSwitch(Node):
     def nav_vel_callback(self, msg):
         if self.dead_man_switch and self.drive_state == "AUTO":
             self.cmd_vel_publisher.publish(msg)
+
+
+            twist_cov_msg = self.create_twist_with_covariance(msg)
+            self.robot_twist_publisher.publish(twist_cov_msg)
         else:
             self.publish_stop_message()
 
     def joy_vel_callback(self, msg):
         if self.dead_man_switch and  self.drive_state == "MANUAL":
             self.cmd_vel_publisher.publish(msg)
+
+            twist_cov_msg = self.create_twist_with_covariance(msg)
+            self.robot_twist_publisher.publish(twist_cov_msg)
         else:
             self.publish_stop_message()
         
@@ -89,6 +97,14 @@ class DeadManSwitch(Node):
     def imu_repub(self, msg):
         msg.angular_velocity.z *= -1 
         self.imu_pub.publish(msg)
+
+    def create_twist_with_covariance(self, twist_msg):
+        twist_cov_msg = TwistWithCovarianceStamped()
+        twist_cov_msg.header.stamp = self.get_clock().now().to_msg()
+        twist_cov_msg.header.frame_id = 'base_link'
+        twist_cov_msg.twist.twist = twist_msg
+        twist_cov_msg.twist.covariance = [0.0] * 36
+        return twist_cov_msg
 
 def main(args = None):
     rclpy.init(args=args)
