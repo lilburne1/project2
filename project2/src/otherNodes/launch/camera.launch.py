@@ -23,7 +23,7 @@ def generate_launch_description():
         executable="cone_detector"
     )
     
-       number_detector = Node(
+    number_detector = Node(
         package="otherNodes",
         executable="cone_detector"
     )
