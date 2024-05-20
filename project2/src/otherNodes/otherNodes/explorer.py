@@ -1,39 +1,51 @@
 import rclpy
 from rclpy.node import Node
-from nav2_simple_commander.robot_navigator import BasicNavigator
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Pose, Twist
+from sensor_msgs.msg import LaserScan
+from rclpy.duration import Duration
+from tf2_ros import TransformListener, Buffer, LookupException, ConnectivityException, ExtrapolationException
+import math
 
 class Explorer(Node):
     def __init__(self):
         super().__init__('explorer')
-        self.navigator = BasicNavigator()
 
-        # initial_pose = PoseStamped()
-        # initial_pose.header.frame_id = 'map'
-        # initial_pose.header.stamp = self.navigator.get_clock().now().to_msg()
-        # initial_pose.pose.position.x = 0.0
-        # initial_pose.pose.position.y = 0.0
-        # initial_pose.pose.orientation.z = 0.0
-        # initial_pose.pose.orientation.w = 0.0
-        # self.navigator.setInitialPose(initial_pose)
+        self.lidar_subscriber = self.create_subscription(
+            LaserScan, 
+            "scan",
+            self.laserscan_callback,
+            10
+        )
 
-        goal_pose = PoseStamped()
-        goal_pose.pose.position.x = 0.2
-        goal_pose.pose.position.y = 0.2
-        self.navigator.goToPose(goal_pose)
- 
-        # Define some waypoints to explore
-        # waypoints = [
-        #     (1.0, 1.0),
-        #     (1.0, -1.0),
-        #     (-1.0, -1.0),
-        #     (-1.0, 1.0)
-        # ]
+        self.robot_position_subscriber = self.create_subscription(
+            PoseStamped,
+            "robot_position",
+            self.position_callback, 
+            10
+        )
 
-        # # Visit each waypoint
-        # for waypoint in waypoints:
-        #     self.navigator.goToPose(waypoint)
-        #     result = self.navigator.waitUntilNav2GoalAchieved()
+        self.cmd_vel_nav_publisher = self.create_publisher(Twist, "cmd_vel_nav", 10)
+
+    def drive_to_point(self, point):
+        x, y = self.position
+        orientation = self.orientation
+
+        goal_x, goal_y = point
+
+        distance_to_point = math.sqrt((goal_x - x)**2 + (goal_y - y)**2)
+
+        while distance_to_point < 0.5:
+            continue
+
+
+        
+
+    def position_callback(self, msg):
+        self.position = (msg.pose.position.x, msg.pose.position.y)
+        self.orientation = msg.pose.orientation
+    
+    def laserscan_callback(self, msg):
+        self.scan = msg.ranges
 
 def main(args = None):
     rclpy.init(args=args)

@@ -1,0 +1,64 @@
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import os
+
+# Importing MNIST Dataset
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# Normalize the images
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Reshape the data
+x_train = x_train.reshape((-1, 28, 28, 1))
+x_test = x_test.reshape((-1, 28, 28, 1))
+
+# Data augmentation
+datagen = ImageDataGenerator(
+    rotation_range=10,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    zoom_range=0.1
+)
+datagen.fit(x_train)
+
+# Create the model
+model = models.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    layers.BatchNormalization(),
+    layers.Conv2D(32, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Dropout(0.25),
+    
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.BatchNormalization(),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Dropout(0.25),
+    
+    layers.Flatten(),
+    layers.Dense(512, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the model
+history = model.fit(datagen.flow(x_train, y_train, batch_size=64),
+                    epochs=30,
+                    validation_data=(x_test, y_test))
+
+# Save the model
+model_path = os.path.join(os.getcwd(), 'model.h5')
+model.save(model_path)
+print(f"Model saved as {model_path}")
+
+# Evaluate test accuracy
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+print("Test accuracy:", test_acc)
