@@ -35,8 +35,8 @@ class ConeDetector(Node):
         upper_red2 = np.array([180, 255, 255])
 
         # Create masks for red color ranges
-        red_mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
-        red_mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+        red_mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
+        red_mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
 
         # Combine masks
         mask = cv2.bitwise_or(red_mask1, red_mask2)
