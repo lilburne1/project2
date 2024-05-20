@@ -5,8 +5,8 @@ import cv2
 from cv_bridge import CvBridge
 import numpy as np
 
-import geometry_msgs.msg import PoseWithCovarianceStamped
-import nav_msgs.msg import OccupancyGrid
+from geometry_msgs.msg import PoseWithCovarianceStamped
+from nav_msgs.msg import OccupancyGrid
 
 class ConeDetector(Node):
     def __init__(self):
@@ -19,8 +19,6 @@ class ConeDetector(Node):
             self.detect_cone,
             10
         )
-
-        self.
 
         self.bridge = CvBridge()
 
@@ -49,9 +47,11 @@ class ConeDetector(Node):
         for i in range(1, num_labels):  
             area = stats[i, cv2.CC_STAT_AREA]
             if area > 8000:
+                print("cone found")
+                ###################### DO STUFF IF CONE IS FOUND
 
 
-            
+        
 def main(args = None):
     rclpy.init(args=args)
     cone_detector = ConeDetector()
