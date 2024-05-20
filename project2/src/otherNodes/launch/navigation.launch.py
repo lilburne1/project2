@@ -19,12 +19,12 @@ def generate_launch_description():
         }.items(),
     )
 
-    # explorer = Node(
-    #     package="otherNodes",
-    #     executable='explorer'
-    # )
+    robot_position = Node(
+        package="otherNodes",
+        executable='robot_position'
+    )
     
     return LaunchDescription([
-        nav2_launch
-        # explorer
+        nav2_launch,
+        robot_position
     ])

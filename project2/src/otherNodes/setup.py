@@ -29,7 +29,7 @@ setup(
     entry_points={
         'console_scripts': [
             'dead_switch = otherNodes.dead_switch:main',
-            'explorer = otherNodes.explorer:main',
+            'robot_position = otherNodes.robot_position:main',
             "cone_detector = otherNodes.cone_detector:main"
         ],
     },
