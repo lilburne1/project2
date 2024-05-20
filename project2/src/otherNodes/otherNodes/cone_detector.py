@@ -57,6 +57,7 @@ def main(args = None):
     cone_detector = ConeDetector()
     rclpy.spin(cone_detector)
 
+
     cone_detector.destroy_node()
     rclpy.shutdown()
 
