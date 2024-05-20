@@ -53,6 +53,7 @@ class ConeDetector(Node):
 
         
 def main(args = None):
+    print("ndfsgsldkjdfsnkljsngklfdjsngkljsnglasdfdsafdsafksjnfglkjsndflgkjndfdfsjnlkfsdgndfjg")
     rclpy.init(args=args)
     cone_detector = ConeDetector()
     rclpy.spin(cone_detector)
@@ -61,8 +62,9 @@ def main(args = None):
     cone_detector.destroy_node()
     rclpy.shutdown()
 
-if __name__ == "__main__":
-    main()
+
+
+main()
 
 
 

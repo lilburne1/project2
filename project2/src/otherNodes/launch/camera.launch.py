@@ -23,13 +23,13 @@ def generate_launch_description():
         executable="cone_detector"
     )
     
-    number_detector = Node(
-        package="otherNodes",
-        executable="cone_detector"
-    )
+    # number_detector = Node(
+    #     package="otherNodes",
+    #     executable="number_detector"
+    # )
 
     return LaunchDescription([
         camera,
         cone_detector,
-        number_detector
+        # number_detector
     ])
