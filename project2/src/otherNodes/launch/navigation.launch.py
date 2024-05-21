@@ -21,8 +21,6 @@ def generate_launch_description():
         executable='robot_position'
     )
 
-    
-    
     return LaunchDescription([
         navigation,
         robot_position

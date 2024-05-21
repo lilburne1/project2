@@ -28,7 +28,7 @@ class ConeDetector(Node):
             10
         )
 
-        self.cones_detected = 10
+        self.cones_detected = 0
 
         self.bridge = CvBridge()
 
@@ -64,7 +64,7 @@ class ConeDetector(Node):
             if area > 8000:
                 
                 
-    def publish_cone_marker(self):
+    def publish_cone_marker(self, colour):
         marker = Marker()
         marker.header.frame_id = 'map'
         marker.header.stamp = self.get_clock().now().to_msg()
@@ -78,11 +78,17 @@ class ConeDetector(Node):
         marker.scale.y = 1.0
         marker.scale.z = 1.0
 
-        # Set the color
-        marker.color.r = 1.0
-        marker.color.g = 0.0
-        marker.color.b = 0.0
-        marker.color.a = 1.0
+        if colour == "YELLOW":
+            # Set the color
+            marker.color.r = 1.0
+            marker.color.g = 1.0
+            marker.color.b = 0.0
+            marker.color.a = 1.0
+        else colour == "RED":
+            marker.color.r = 1.0
+            marker.color.g = 0.0
+            marker.color.b = 0.0
+            marker.color.a = 1.0
 
         # Set the pose of the marker
         marker.pose.position.x = self.current_robot_position.pose.position.x + 0.5
@@ -101,13 +107,9 @@ def main(args = None):
     cone_detector = ConeDetector()
     rclpy.spin(cone_detector)
 
-
     cone_detector.destroy_node()
     rclpy.shutdown()
 
-
-
-main()
 
 
 
