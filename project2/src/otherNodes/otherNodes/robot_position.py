@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped, TransformedStamped
+from geometry_msgs.msg import PoseStamped
+from tf2_msgs.msg import TransformStamped
 from rclpy.duration import Duration
 from tf2_ros import TransformListener, Buffer, LookupException, ConnectivityException, ExtrapolationException
 

@@ -27,6 +27,11 @@ RUN apt-get update \
     ros-humble-nav2-simple-commander \
     ros-humble-teleop-twist-joy \
     ros-humble-rmw-cyclonedds-cpp \ 
+    ros-humble-tf2 \
+    ros-humble-tf2-ros \
+    ros-humble-tf2-msgs \
+    ros-humble-cv-bridge \
+    python3-opencv \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
     ros-humble-robot-localization \ 
@@ -42,6 +47,7 @@ RUN apt-get update && apt-get install -y doxygen
 RUN pip3 install numpy
 RUN pip3 install opencv-python
 RUN pip3 install cv_bridge
+RUN pip3 install tensorflow
 
 # Setup scripts
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
@@ -54,6 +60,10 @@ RUN cd AriaCoda && make && make install
 
 COPY ./project2 ./project2
 WORKDIR /workspaces/project2
+
+# Ensure model.h5 is copied to the appropriate location
+COPY ./project2/model.h5 /workspaces/project2/install/otherNodes/lib/otherNodes/model.h5
+
 
 # Ensuring the ROS environment is properly sourced before building
 RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
