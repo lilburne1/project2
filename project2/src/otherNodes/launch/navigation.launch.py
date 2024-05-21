@@ -9,15 +9,13 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    navigation_config_file = get_package_share_directory('otherNodes') + '/config/navigation.yaml'
-    nav2_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'bringup_launch.py')
-        ),
+    navigation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([get_package_share_directory('nav2_bringup'), '/launch/navigation_launch.py']),
         launch_arguments={
-            'params_file': navigation_config_file
-        }.items(),
+            'params_file': get_package_share_directory('otherNodes') + '/config/navigation.yaml'
+        }.items()
     )
+   
 
     # robot_position = Node(
     #     package="otherNodes",
@@ -25,6 +23,6 @@ def generate_launch_description():
     # )
     
     return LaunchDescription([
-        nav2_launch
+        navigation
         # robot_position
     ])
