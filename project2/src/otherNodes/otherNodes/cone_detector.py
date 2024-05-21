@@ -3,9 +3,10 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge
+from visualization_msgs.msg import Marker
 import numpy as np
 
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import OccupancyGrid
 
 class ConeDetector(Node):
@@ -20,7 +21,21 @@ class ConeDetector(Node):
             10
         )
 
+        self.robot_position_subscriber = self.create_subscription(
+            PoseStamped,
+            "robot_position",
+            self.robot_position_update, 
+            10
+        )
+
+        self.cones_detected = 10
+
         self.bridge = CvBridge()
+
+        self.marker_publisher = self.create_publisher(Marker, 'cone_marker', 10)
+
+    def robot_position_update(self, msg):
+        self.current_position = msg
 
     def detect_cone(self, msg):
         bgr_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -47,13 +62,41 @@ class ConeDetector(Node):
         for i in range(1, num_labels):  
             area = stats[i, cv2.CC_STAT_AREA]
             if area > 8000:
-                print("cone found")
-                ###################### DO STUFF IF CONE IS FOUND
+                
+                
+    def publish_cone_marker(self):
+        marker = Marker()
+        marker.header.frame_id = 'map'
+        marker.header.stamp = self.get_clock().now().to_msg()
 
-
+        marker.type = Marker.SPHERE
+        marker.id = self.cones_detected
+        self.cones_detected += 1
         
+        # Set the scale of the marker
+        marker.scale.x = 1.0
+        marker.scale.y = 1.0
+        marker.scale.z = 1.0
+
+        # Set the color
+        marker.color.r = 1.0
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0
+
+        # Set the pose of the marker
+        marker.pose.position.x = self.current_robot_position.pose.position.x + 0.5
+        marker.pose.position.y = self.current_robot_position.pose.position.y
+        marker.pose.position.z = 0.0
+
+        marker.pose.orientation.x = self.current_robot_position.pose.orientation.x
+        marker.pose.orientation.y = self.current_robot_position.pose.orientation.y
+        marker.pose.orientation.z = self.current_robot_position.pose.orientation.z
+        marker.pose.orientation.w = self.current_robot_position.pose.orientation.w
+
+        self.marker_publisher.publish(marker)
+     
 def main(args = None):
-    print("ndfsgsldkjdfsnkljsngklfdjsngkljsnglasdfdsafdsafksjnfglkjsndflgkjndfdfsjnlkfsdgndfjg")
     rclpy.init(args=args)
     cone_detector = ConeDetector()
     rclpy.spin(cone_detector)

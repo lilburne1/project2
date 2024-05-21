@@ -11,7 +11,7 @@ services:
     tty: true
     environment:
       - ROS_DOMAIN_ID=111
-      - DISPLAY=:1
+      - DISPLAY=:3
       - QT_X11_NO_MITSHM=1
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     network_mode: host # Networking and IPC for ROS 2

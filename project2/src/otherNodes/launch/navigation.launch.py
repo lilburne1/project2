@@ -16,13 +16,14 @@ def generate_launch_description():
         }.items()
     )
    
+    robot_position = Node(
+        package="otherNodes",
+        executable='robot_position'
+    )
 
-    # robot_position = Node(
-    #     package="otherNodes",
-    #     executable='robot_position'
-    # )
+    
     
     return LaunchDescription([
-        navigation
-        # robot_position
+        navigation,
+        robot_position
     ])

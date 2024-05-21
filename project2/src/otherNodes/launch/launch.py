@@ -85,14 +85,6 @@ def generate_launch_description():
         executable='dead_switch'
     )
 
-    # launch.LaunchDescription([
-    #     launch.actions.ExecuteProcess(
-    #         cmd=['ros2', 'bag', 'record', '-a'],
-    #         output='screen'
-    #     )
-    # ])
-
-
     return LaunchDescription([
         joy_node,
         joy_teleop_node,

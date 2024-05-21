@@ -9,7 +9,7 @@ class RobotPosition(Node):
         super().__init__('robot_position')
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-        self.timer = self.create_timer(1.0, self.timer_callback)  # Check position every second
+        self.timer = self.create_timer(1.0, self.timer_callback) 
 
         self.robot_position_publisher = self.create_publisher(PoseStamped, "robot_position", 10)
 
