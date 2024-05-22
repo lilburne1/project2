@@ -13,7 +13,7 @@ class Explorer(Node):
         self.nav_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.nav_client.wait_for_server()
 
-        self.explore_subscriber = self.create_subscriber(
+        self.explore_subscriber = self.create_subscription(
             Bool,
             "explore",
             self.explore, 
