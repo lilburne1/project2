@@ -8,6 +8,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import Twist, TwistWithCovarianceStamped
 from sensor_msgs.msg import Imu
 
+
 class DeadManSwitch(Node):
     def __init__(self):
         super().__init__("dead_man_switch")

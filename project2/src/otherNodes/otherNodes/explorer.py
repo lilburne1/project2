@@ -2,50 +2,97 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, Pose, Twist
 from sensor_msgs.msg import LaserScan
-from rclpy.duration import Duration
-from tf2_ros import TransformListener, Buffer, LookupException, ConnectivityException, ExtrapolationException
+from nav2_msgs.action import NavigateToPose
+from rclpy.action import ActionClient
 import math
 
 class Explorer(Node):
     def __init__(self):
         super().__init__('explorer')
+        self.nav_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        self.nav_client.wait_for_server()
 
-        self.lidar_subscriber = self.create_subscription(
-            LaserScan, 
-            "scan",
-            self.laserscan_callback,
-            10
-        )
+        self.area_size = 14.0
+        self.path_spacing = 1.0
+        self.current_goal_index = 0
+        self.goals = self.generate_lawn_mower_goals(self.area_size, self.path_spacing)
 
-        self.robot_position_subscriber = self.create_subscription(
-            PoseStamped,
-            "robot_position",
-            self.position_callback, 
-            10
-        )
+        self.send_next_goal()
 
-        self.cmd_vel_nav_publisher = self.create_publisher(Twist, "cmd_vel_nav", 10)
+    def generate_lawn_mower_goals(self, area_size, spacing):
+        goals = []
+        half_area = area_size / 2
 
-    def drive_to_point(self, point):
-        x, y = self.position
-        orientation = self.orientation
+        # Adjust the starting point to (0,0) and cover the entire area
+        y = 0
+        direction = 1
 
-        goal_x, goal_y = point
+        while y <= half_area:
+            # From (0, y) to (half_area, y)
+            for x in range(0, int(half_area + 1)):
+                goals.append((x * direction, y))
+            y += spacing
 
-        distance_to_point = math.sqrt((goal_x - x)**2 + (goal_y - y)**2)
+            if y > half_area:
+                break
 
-        while distance_to_point < 0.5:
-            continue
+            # From (half_area, y) to (0, y)
+            for x in range(int(half_area), -1, -1):
+                goals.append((x * direction, y))
+            y += spacing
 
+        # Mirror the goals for the negative y-axis and reverse the path to (0,0)
+        mirrored_goals = []
+        for x, y in goals:
+            mirrored_goals.append((x, -y))
 
-        
+        # Combine and ensure to end at (0,0)
+        all_goals = goals + mirrored_goals[::-1]
+        all_goals.append((0, 0))
 
-    def position_callback(self, msg):
-        self.position = (msg.pose.position.x, msg.pose.position.y)
-        self.orientation = msg.pose.orientation
-    
-    def laserscan_callback(self, msg):
-        self.scan = msg.ranges
+        return all_goals
+
+    def send_next_goal(self):
+        if self.current_goal_index >= len(self.goals):
+            self.get_logger().info('Completed lawn mower pattern')
+            return
+
+        goal = self.goals[self.current_goal_index]
+        self.current_goal_index += 1
+
+        pose = PoseStamped()
+        pose.header.frame_id = 'map'
+        pose.header.stamp = self.get_clock().now().to_msg()
+        pose.pose.position.x = goal[0]
+        pose.pose.position.y = goal[1]
+        pose.pose.orientation.w = 1.0
+
+        goal_msg = NavigateToPose.Goal()
+        goal_msg.pose = pose
+
+        information = "Going to ({goal[0]}, {goal[1]})"
+        self.get_logger().info(information)
+
+        self.nav_client.send_goal_async(goal_msg).add_done_callback(self.goal_response_callback)
+
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().info('Goal rejected')
+            self.send_next_goal()
+            return
+
+        self.get_logger().info('Goal accepted')
+        goal_handle.result().add_done_callback(self.result_callback)
+
+    def result_callback(self, future):
+        result = future.result().result
+        if result.result == NavigateToPose.Result.SUCCESS:
+            self.get_logger().info('Goal succeeded')
+        else:
+            self.get_logger().info('Goal failed')
+
+        self.send_next_goal()
 
 def main(args = None):
     rclpy.init(args=args)
