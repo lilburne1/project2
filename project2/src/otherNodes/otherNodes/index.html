@@ -1,80 +1,54 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8" />
+    <title>ROS Image Viewer</title>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/nav2djs/current/nav2d.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
 </head>
-
 <body>
-  <h1>Rosbridge</h1>
+    <h1>ROS Image Viewer</h1>
+    <div id="image_container">
+        <img id="ros_image" src=""/>
+    </div>
+    <script type="text/javascript">
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'
+        });
 
-  <h2>Publish for Waypoints</h2>
-  <form id="waypoints-form">
-    <label for="number1">Waypoint 1:</label>
-    <input type="text" id="waypoint1" name="waypoint1" value="0"><br>
-    <label for="number2">Waypoint2 2:</label>
-    <input type="text" id="waypoint2" name="waypoint2" value="0"><br>
-    <label for="number3">Waypoint 3:</label>
-    <input type="text" id="waypoint3" name="waitpoint3" value="0"><br>
-  </form>
+        ros.on('connection', function() {
+            console.log('Connected to websocket server.');
+        });
 
-  <h2>Red/Yellow Objects Images</h2>
-  <img id="ros-image" alt="Image from ROS" style="width: 640px; height: 480px; border: 1px solid black;" />
+        ros.on('error', function(error) {
+            console.log('Error connecting to websocket server: ', error);
+        });
 
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+        ros.on('close', function() {
+            console.log('Connection to websocket server closed.');
+        });
 
-  <script type="text/javascript" type="text/javascript">
-    const ros = new ROSLIB.Ros({ url: "ws://localhost:9090" });
+        var listener = new ROSLIB.Topic({
+            ros: ros,
+            name: '/Cone_found_Web',
+            messageType: 'sensor_msgs/Image'
+        });
 
-    // When the Rosbridge server connects, fill the span with id "status" with "successful"
-    ros.on("connection", () => {
-      document.getElementById("status").innerHTML = "successful";
-    });
-
-    // When the Rosbridge server experiences an error, fill the "status" span with the returned error
-    ros.on("error", (error) => {
-      document.getElementById("status").innerHTML = `errored out (${error})`;
-    });
-
-    // When the Rosbridge server shuts down, fill the "status" span with "closed"
-    ros.on("close", () => {
-      document.getElementById("status").innerHTML = "closed";
-    });
-
-    // Create a listener for /my_topic
-    const imageTopic = new ROSLIB.Topic({
-      ros,
-      name: "/published_object",
-      messageType: "sensor_msgs/Image"
-    });
-
-    // When we receive a message on /my_topic, add its data as a list item to the "messages" ul
-    imageTopic.subscribe((message) => {
-      const img = document.getElementById("ros-image");
-      img.src = "data:image/jpeg;base64," + message.data;
-    });
-
-    const waypointTopic = new ROSLIB.Topic({
-      ros,
-      name: "/waypoints",
-      messageType: "std_msgs/Float32MultiArray"
-    });
-
-    // Handle the form submission
-    document.getElementById("waypoints-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const number1 = parseFloat(document.getElementById("waypoint1").value);
-      const number2 = parseFloat(document.getElementById("waypoint2").value);
-      const number3 = parseFloat(document.getElementById("waypoint3").value);
-
-      const numbers = new ROSLIB.Message({
-        data: [number1, number2, number3]
-      });
-
-      numbersTopic.publish(numbers);
-    });
-  </script>
+        listener.subscribe(function(message) {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var imgData = ctx.createImageData(message.width, message.height);
+            for (var i = 0; i < imgData.data.length; i += 4) {
+                imgData.data[i] = message.data[i];
+                imgData.data[i + 1] = message.data[i + 1];
+                imgData.data[i + 2] = message.data[i + 2];
+                imgData.data[i + 3] = 255; // Alpha channel
+            }
+            ctx.putImageData(imgData, 0, 0);
+            document.getElementById('ros_image').src = canvas.toDataURL();
+        });
+    </script>
 </body>
-
 </html>
