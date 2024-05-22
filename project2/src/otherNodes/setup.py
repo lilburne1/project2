@@ -18,7 +18,7 @@ setup(
         ('share/' + package_name + '/config', ['config/navigation.yaml']),
         ('share/' + package_name + '/models', ['models/robots/pioneer.urdf'])
     ],
-    install_requires=['setuptools', 'rclpy', "nav2_simple_commander", "numpy", "cv2", "cv_bridge", "tf2"],
+    install_requires=['setuptools', 'rclpy', "nav2_simple_commander", "numpy", "cv2", "cv_bridge", "tf2", "argparse"],
     zip_safe=True,
     maintainer='ben',
     maintainer_email='benlilburne@outlook.com',
@@ -30,7 +30,9 @@ setup(
             'dead_switch = otherNodes.dead_switch:main',
             'robot_position = otherNodes.robot_position:main',
             'cone_detector = otherNodes.cone_detector:main',
-            'number_detector = otherNodes.number_detector:main'
+            'number_detector = otherNodes.number_detector:main',
+            "waypoint_follower = otherNodes.waypoint_follower:main",
+            "explorer = otherNodes.explorer:main"
         ],
     },
 )

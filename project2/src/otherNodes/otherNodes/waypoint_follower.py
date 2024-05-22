@@ -5,67 +5,52 @@ from sensor_msgs.msg import LaserScan
 from nav2_msgs.action import NavigateToPose
 from rclpy.action import ActionClient
 import math
-from std_msgs.msg import Bool
+from std_msgs.msg import String, Bool
 
-class Explorer(Node):
+class WaypointFollower(Node):
     def __init__(self):
-        super().__init__('explorer')
+        super().__init__('waypoint_follower')
         self.nav_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.nav_client.wait_for_server()
 
-        self.explore_subscriber = self.create_subscriber(
-            Bool,
-            "explore",
-            self.explore, 
+        self.number_subscriber = self.create_subscription(
+            String,
+            "number_coordinates",
+            self.new_number,
             10
         )
 
-    def explore(self, msg):
-        self.area_size = 14.0
-        self.path_spacing = 1.0
-        self.current_goal_index = 0
-        self.goals = self.generate_lawn_mower_goals(self.area_size, self.path_spacing)
+        self.waypoint_subscriber = self.create_subscription(
+            Bool,
+            "waypoint_input",
+            self.waypoint,
+            10
+        )
 
+        self.numbers = {}
+        self.current_goal_index = 0
+        self.goals = []
+
+    def new_number(self, msg):
+        number, x, y = msg.data.split(',')
+        
+        new_point = "New number {number}: ({x},{y})"
+        self.numbers[number] = (x, y)
+
+        self.get_logger().info(new_point)
+
+    def waypoint(self, msg):
+        user_input = msg.data
+        number_goals = user_input.split(",")
+        for number in number_goals:
+            if number in self.numbers:
+                self.goals.append(self.numbers[number])
+        self.goals.append((0, 0))
+        
+        self.current_goal_index = 0
         self.send_next_goal()
 
-    def generate_lawn_mower_goals(self, area_size, spacing):
-        goals = []
-        half_area = area_size / 2
-
-        # Adjust the starting point to (0,0) and cover the entire area
-        y = 0
-        direction = 1
-
-        while y <= half_area:
-            # From (0, y) to (half_area, y)
-            for x in range(0, int(half_area + 1)):
-                goals.append((x * direction, y))
-            y += spacing
-
-            if y > half_area:
-                break
-
-            # From (half_area, y) to (0, y)
-            for x in range(int(half_area), -1, -1):
-                goals.append((x * direction, y))
-            y += spacing
-
-        # Mirror the goals for the negative y-axis and reverse the path to (0,0)
-        mirrored_goals = []
-        for x, y in goals:
-            mirrored_goals.append((x, -y))
-
-        # Combine and ensure to end at (0,0)
-        all_goals = goals + mirrored_goals[::-1]
-        all_goals.append((0, 0))
-
-        return all_goals
-
     def send_next_goal(self):
-        if self.current_goal_index >= len(self.goals):
-            self.get_logger().info('Completed lawn mower pattern')
-            return
-
         goal = self.goals[self.current_goal_index]
         self.current_goal_index += 1
 
@@ -105,10 +90,10 @@ class Explorer(Node):
 
 def main(args = None):
     rclpy.init(args=args)
-    explorer = Explorer()
-    rclpy.spin(explorer)
+    waypoint_follower = WaypointFollower()
+    rclpy.spin(waypoint_follower)
 
-    explorer.destroy_node()
+    waypoint_follower.destroy_node()
     rclpy.shutdown()
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist, TwistWithCovarianceStamped
 from sensor_msgs.msg import Imu
-
+from std_msgs.msg import Bool
 
 class DeadManSwitch(Node):
     def __init__(self):
@@ -49,6 +49,7 @@ class DeadManSwitch(Node):
 
         self.cmd_vel_publisher = self.create_publisher(Twist, "cmd_vel", 10)
         self.robot_twist_publisher = self.create_publisher(TwistWithCovarianceStamped, "robot_twist", 10)
+        self.explore_publisher = self.create_publisher(Bool, "explore", 10)
 
         self.imu_pub = self.create_publisher(Imu, "transformed_imu", 10)
 
@@ -66,10 +67,14 @@ class DeadManSwitch(Node):
         if msg.buttons[1] == 1 and self.drive_state != "MANUAL":
             self.drive_state = "MANUAL"
 
+        if msg.buttons[2] == 1:
+            true_msg = Bool
+            true_msg.data = True
+            self.explore_publisher.publish()
+
     def nav_vel_callback(self, msg):
         if self.dead_man_switch and self.drive_state == "AUTO":
             self.cmd_vel_publisher.publish(msg)
-
 
             twist_cov_msg = self.create_twist_with_covariance(msg)
             self.robot_twist_publisher.publish(twist_cov_msg)

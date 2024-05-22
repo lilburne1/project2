@@ -22,9 +22,14 @@ def generate_launch_description():
         package="otherNodes",
         executable="explorer"
     )
-    
 
+    waypoint_follower = Node(
+        package="otherNodes",
+        executable="waypoint_follower"
+    )
+    
     return LaunchDescription([
         navigation,
-        explorer
+        explorer,
+        waypoint_follower
     ])
