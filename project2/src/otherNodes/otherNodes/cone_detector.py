@@ -175,6 +175,7 @@ class ConeDetector(Node):
             marker.color.b = 0.0
             marker.pose.position.x = position[0]
             marker.pose.position.y = position[1]
+
             marker.pose.position.z = position[2]
             marker.id = marker_id
             marker_array.markers.append(marker)
@@ -198,7 +199,7 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-## just save the cv as a jpeg when it finds the cone
+
 
 # import rclpy
 # from rclpy.node import Node
