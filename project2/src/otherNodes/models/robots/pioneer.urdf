@@ -623,11 +623,11 @@
 
   <joint name="cam_optical_joint" type="fixed">
     <parent link="cam_frame" />
-    <child link="cam_optical_link" />
+    <child link="oak-d-base-frame" />
     <origin xyz="0.3 0 0.2" rpy="-1.65 0 -1.65"/>
   </joint>
 
-  <link name="cam_optical_link"></link>
+  <link name="oak-d-base-frame"></link>
 
   <gazebo reference="cam_frame">
     <material>Gazebo/Blue</material>
@@ -651,6 +651,7 @@
       </camera>
     </sensor>
   </gazebo>
+  
 
   <!-- IMU -->
  

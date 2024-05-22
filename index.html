@@ -9,48 +9,73 @@
   <h1>Rosbridge</h1>
 
   <h2>Publish for Waypoints</h2>
-  <!-- IM PRETTY SURE THIS FORM IS UNNECCESSARY, WAS IT CREATED BY COPILOT?? -->
-  <form id="cmd-vel-form">
-    <label for="linear-x">Linear X:</label>
-    <input type="text" id="linear-x" name="linear-x" value="0"><br>
-    <label for="angular-z">Angular Z:</label>
-    <input type="text" id="angular-z" name="angular-z" value="0"><br>
-    <input type="submit" value="Send">
+  <form id="waypoints-form">
+    <label for="number1">Waypoint 1:</label>
+    <input type="text" id="waypoint1" name="waypoint1" value="0"><br>
+    <label for="number2">Waypoint 2:</label>
+    <input type="text" id="waypoint2" name="waypoint2" value="0"><br>
+    <label for="number3">Waypoint 3:</label>
+    <input type="text" id="waypoint3" name="waypoint3" value="0"><br>
+    <input type="submit" value="Submit">
   </form>
-  <!-- IM PRETTY SURE THIS FORM IS UNNECCESSARY, WAS IT CREATED BY COPILOT?? -->
+
+  <h2>Red/Yellow Objects Images</h2>
   <img id="ros-image" alt="Image from ROS" style="width: 640px; height: 480px; border: 1px solid black;" />
 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
 
-  <script type="text/javascript" type="text/javascript">
+  <script type="text/javascript">
     const ros = new ROSLIB.Ros({ url: "ws://localhost:9090" });
 
-    // When the Rosbridge server connects, fill the span with id "status" with "successful"
     ros.on("connection", () => {
+      console.log("Connected to websocket server.");
       document.getElementById("status").innerHTML = "successful";
     });
 
-    // When the Rosbridge server experiences an error, fill the "status" span with the returned error
     ros.on("error", (error) => {
+      console.error("Error connecting to websocket server: ", error);
       document.getElementById("status").innerHTML = `errored out (${error})`;
     });
 
-    // When the Rosbridge server shuts down, fill the "status" span with "closed"
     ros.on("close", () => {
+      console.log("Connection to websocket server closed.");
       document.getElementById("status").innerHTML = "closed";
     });
 
-    // Create a listener for /my_topic
     const imageTopic = new ROSLIB.Topic({
       ros,
-      name: "/published_object",
+      name: "/Cone_found_Web",
       messageType: "sensor_msgs/Image"
     });
 
-    // When we receive a message on /my_topic, add its data as a list item to the "messages" ul
     imageTopic.subscribe((message) => {
+      console.log("Received image message.");
       const img = document.getElementById("ros-image");
-      img.src = "data:image/jpeg;base64," + message.data;
+      const uint8Array = new Uint8Array(message.data);
+      const blob = new Blob([uint8Array], { type: "image/jpeg" });
+      const url = URL.createObjectURL(blob);
+      img.src = url;
+      console.log("Updated image src.");
+    });
+
+    const waypointTopic = new ROSLIB.Topic({
+      ros,
+      name: "/waypoints",
+      messageType: "std_msgs/Float32MultiArray"
+    });
+
+    document.getElementById("waypoints-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const number1 = parseFloat(document.getElementById("waypoint1").value);
+      const number2 = parseFloat(document.getElementById("waypoint2").value);
+      const number3 = parseFloat(document.getElementById("waypoint3").value);
+
+      const numbers = new ROSLIB.Message({
+        data: [number1, number2, number3]
+      });
+
+      waypointTopic.publish(numbers);
     });
   </script>
 </body>

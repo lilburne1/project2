@@ -38,6 +38,8 @@ RUN apt-get update \
     ros-humble-rosbridge-server \ 
     ros-humble-joy \
     ros-humble-rviz2 \
+    ros-humble-image-transport \
+    ros-humble-compressed-image-transport \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
