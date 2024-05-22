@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <h1>Rosbridge</h1>
+
+  <h2>Publish for Waypoints</h2>
+  <form id="cmd-vel-form">
+    <label for="linear-x">Linear X:</label>
+    <input type="text" id="linear-x" name="linear-x" value="0"><br>
+    <label for="angular-z">Angular Z:</label>
+    <input type="text" id="angular-z" name="angular-z" value="0"><br>
+    <input type="submit" value="Send">
+  </form>
+
+  <img id="ros-image" alt="Image from ROS" style="width: 640px; height: 480px; border: 1px solid black;" />
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+
+  <script type="text/javascript" type="text/javascript">
+    const ros = new ROSLIB.Ros({ url: "ws://localhost:9090" });
+
+    // When the Rosbridge server connects, fill the span with id "status" with "successful"
+    ros.on("connection", () => {
+      document.getElementById("status").innerHTML = "successful";
+    });
+
+    // When the Rosbridge server experiences an error, fill the "status" span with the returned error
+    ros.on("error", (error) => {
+      document.getElementById("status").innerHTML = `errored out (${error})`;
+    });
+
+    // When the Rosbridge server shuts down, fill the "status" span with "closed"
+    ros.on("close", () => {
+      document.getElementById("status").innerHTML = "closed";
+    });
+
+    // Create a listener for /my_topic
+    const imageTopic = new ROSLIB.Topic({
+      ros,
+      name: "/published_object",
+      messageType: "sensor_msgs/Image"
+    });
+
+    // When we receive a message on /my_topic, add its data as a list item to the "messages" ul
+    imageTopic.subscribe((message) => {
+      const img = document.getElementById("ros-image");
+      img.src = "data:image/jpeg;base64," + message.data;
+    });
+  </script>
+</body>
+
+</html>

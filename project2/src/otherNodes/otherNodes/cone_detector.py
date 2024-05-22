@@ -24,10 +24,38 @@ class ConeDetector(Node):
             self.detect_cone,
             10
         )
+        self.markers = {}
         self.cone_detected_count = 0
-        self.detection_threshold = 3  # Set your detection threshold here
+        self.detection_threshold = 6  # Set your detection threshold here
+        self.marker_id = 0
+
+    def is_marker_nearby(self):
+        try:
+            if not self.markers:
+                return False
+            
+            trans = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time(), Duration(seconds=1.0))
+            robot_position = (trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z)
+            
+            for marker_id, marker_position in self.markers.items():
+                distance = np.sqrt(
+                    (robot_position[0] - marker_position[0])**2 +
+                    (robot_position[1] - marker_position[1])**2 +
+                    (robot_position[2] - marker_position[2])**2
+                )
+                if distance < 4.0:  # Define a suitable distance threshold
+                    self.get_logger().info(f"Existing marker {marker_id} detected nearby, skipping cone detection")
+                    return True
+            return False
+        except Exception as e:
+            self.get_logger().error(f'Could not check for nearby marker: {e}')
+            return False
+
 
     def detect_cone(self, msg):
+        if self.is_marker_nearby():
+            return
+
         try:
             bgr_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         except CvBridgeError as e:
@@ -101,6 +129,9 @@ class ConeDetector(Node):
             marker.pose.position.y = trans.transform.translation.y
             marker.pose.position.z = trans.transform.translation.z
             marker.pose.orientation = trans.transform.rotation
+            marker.id = self.marker_id
+            self.marker_id += 1
+            self.markers[marker.id] = (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z)
             self.marker_publisher.publish(marker)
         except Exception as e:
             self.get_logger().error(f'Could not transform map to base_link: {e}')
@@ -119,7 +150,6 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
 
 # import rclpy
 # from rclpy.node import Node

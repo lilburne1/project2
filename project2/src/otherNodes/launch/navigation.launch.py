@@ -9,13 +9,11 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    navigation_params = get_package_share_directory('otherNodes') + '/config/navigation.yaml'
-    navigation = Node(
-        package="nav2_bringup",
-        executable="navigation_launch",
-        name="nav2_bringup",
-        parameters=[navigation_params],
-        remappings=[('/cmd_vel', '/cmd_vel_nav')]     
+    navigation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([get_package_share_directory('nav2_bringup'), '/launch/navigation_launch.py']),
+        launch_arguments={
+            'params_file': get_package_share_directory('otherNodes') + '/config/navigation.yaml'
+        }.items()
     )
 
     explorer = Node(
@@ -23,13 +21,13 @@ def generate_launch_description():
         executable="explorer"
     )
 
-    waypoint_follower = Node(
-        package="otherNodes",
-        executable="waypoint_follower"
-    )
+    # waypoint_follower = Node(
+    #     package="otherNodes",
+    #     executable="waypoint_follower"
+    # )
     
     return LaunchDescription([
         navigation,
-        explorer,
-        waypoint_follower
+        explorer
+        # waypoint_follower
     ])

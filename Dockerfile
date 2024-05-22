@@ -35,6 +35,7 @@ RUN apt-get update \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
     ros-humble-robot-localization \ 
+    ros-humble-rosbridge-server \ 
     ros-humble-joy \
     ros-humble-rviz2 \
     && apt-get clean \
