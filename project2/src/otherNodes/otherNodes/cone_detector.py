@@ -43,14 +43,13 @@ class ConeDetector(Node):
                     (robot_position[1] - marker_position[1])**2 +
                     (robot_position[2] - marker_position[2])**2
                 )
-                if distance < 4.0:  # Define a suitable distance threshold
+                if distance < 1.0:  # Define a suitable distance threshold
                     self.get_logger().info(f"Existing marker {marker_id} detected nearby, skipping cone detection")
                     return True
             return False
         except Exception as e:
             self.get_logger().error(f'Could not check for nearby marker: {e}')
             return False
-
 
     def detect_cone(self, msg):
         if self.is_marker_nearby():
@@ -133,8 +132,13 @@ class ConeDetector(Node):
             self.marker_id += 1
             self.markers[marker.id] = (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z)
             self.marker_publisher.publish(marker)
+            self.log_markers()
         except Exception as e:
             self.get_logger().error(f'Could not transform map to base_link: {e}')
+
+    def log_markers(self):
+        marker_list = "\n".join([f"Marker ID: {marker_id}, Position: {position}" for marker_id, position in self.markers.items()])
+        self.get_logger().info(f"Markers:\n{marker_list}")
 
 def main(args=None):
     rclpy.init(args=args)
@@ -150,6 +154,7 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
 
 # import rclpy
 # from rclpy.node import Node
