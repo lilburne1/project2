@@ -2,7 +2,6 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, Pose, Twist
 from sensor_msgs.msg import LaserScan
-from nav2_msgs.action import NavigateToPose
 from std_msgs.msg import Float32MultiArray
 import math
 from nav2_simple_commander.robot_navigator import BasicNavigator
@@ -11,6 +10,9 @@ from std_msgs.msg import String, Bool
 class WaypointFollower(Node):
     def __init__(self):
         super().__init__('waypoint_follower')
+
+        self.number_coords = {}
+        self.waypoint_list = None
 
         self.number_coordinates_subscriber = self.create_subscription(
             String,
@@ -27,26 +29,44 @@ class WaypointFollower(Node):
         )
 
         nav = BasicNavigator()
-        
-
-
-
-
-
-
-
-
-        self.numbers = {}
-        self.current_goal_index = 0
-        self.goals = []
 
     def new_number(self, msg):
-        number, x, y = msg.data.split(',')
+        message = msg.data.split(',')
+        number = message[0]
+        x = message[1]
+        y = message[2]
         
-        new_point = "New number {number}: ({x},{y})"
         self.numbers[number] = (x, y)
 
+        new_point = "New number {number}: ({x},{y})"
         self.get_logger().info(new_point)
+
+    def waypoints(self, msg):
+        self.waypoints = msg.data
+
+    def waypoint_following(self, msg):
+        PoseList = [] 
+        if self.waypoint_list != None and len(self.number_coords) >= 3:
+            for waypoint in self.waypoint_list:
+                coord = PoseStamped()
+                coord.header.frame_id = 'map'  
+                coord.header.stamp = self.get_clock().now().to_msg()
+                coord.pose.position.x = self.number_coords[waypoint][0]
+                coord.pose.position.y = self.number_coords[waypoint][1]
+                coord.pose.position.z = 0.0  
+                coord.pose.orientation.w = 1.0  
+                PoseList.append(coord)
+                # Log the waypoint and its coordinates
+                self.get_logger().info(f'Waypoint {waypoint}: (x={self.number_coords[waypoint][0]}, y={self.number_coords[waypoint][1]})')
+            
+
+            
+
+
+
+
+
+
 
 #     def send_next_goal(self):
 #         goal = self.goals[self.current_goal_index]
