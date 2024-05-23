@@ -40,7 +40,7 @@ class Explorer(Node):
             self.explore_state = False
     
     def lidar_callback(self, msg):
-        min_distance = 0.3  
+        min_distance = 0.4  
         dangerous = False
 
         for i, distance in enumerate(msg.ranges):

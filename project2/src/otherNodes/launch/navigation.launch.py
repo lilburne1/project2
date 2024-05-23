@@ -32,7 +32,7 @@ def generate_launch_description():
     # )
     
     return LaunchDescription([
-        # navigation,
+        navigation,
         explorer, 
         robot_position
         # waypoint_follower
