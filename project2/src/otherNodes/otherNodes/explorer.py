@@ -4,6 +4,7 @@ from geometry_msgs.msg import PoseStamped, Pose, Twist
 from sensor_msgs.msg import LaserScan
 from rclpy.action import ActionClient
 import math
+import numpy as np
 from std_msgs.msg import Bool
 
 class Explorer(Node):
@@ -39,16 +40,22 @@ class Explorer(Node):
         else:
             self.explore_state = False
             
-    
     def lidar_callback(self, msg):
-        min_distance = 0.4  
-        dangerous = False
+        angle_increment = np.degrees(msg.angle_increment)
+        angle_filter = int(40/angle_increment)
 
+        middle_index = int((270/angle_increment)/2)
+        top_index = int(middle_index + angle_filter)
+        bottom_index = int(middle_index - angle_filter)
+
+        min_distance = 0.5
+        dangerous = False
         for i, distance in enumerate(msg.ranges):
-            if distance < min_distance and self.explore_state == True:
-                dangerous = True
-                self.turn()
-                break
+            if i > bottom_index and i < top_index:
+                if distance < min_distance and self.explore_state == True:
+                    dangerous = True
+                    self.turn()
+                    break
         if not dangerous and self.explore_state == True:
             self.straight()
             

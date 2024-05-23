@@ -136,7 +136,7 @@ services:
       - type: bind
         source: /dev/shm
         target: /dev/shm
-      - "/home/group10/Deskto/photos:/photos"
+      - "/home/group10/Documents/proect2-3/project2/photos:/photos"
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
@@ -168,3 +168,26 @@ services:
   #     - ROS_DOMAIN_ID=111
   #   user: "${UID}:${GID}"
   #   command: /bin/bash -c "ros2 bag record /cmd_vel -o /workspaces/project2/project2/rosbags/projectBag"
+  gui_container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROS_DISTRO: humble
+      target: base
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - "/dev:/dev"
+      - type: bind
+        source: /dev/shm
+        target: /dev/shm
+    device_cgroup_rules:
+      - 'c *:* mrw'
+    environment:
+      - ROS_DOMAIN_ID=111
+    user: "${UID}:${GID}"
+    command: /bin/bash -c "ros2 launch rosbridge_server rosbridge_websocket.launch"
