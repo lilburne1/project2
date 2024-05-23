@@ -58,6 +58,7 @@ class DeadManSwitch(Node):
         self.aria_vel_publisher = self.create_publisher(Twist, "aria_vel", 10)
         self.robot_twist_publisher = self.create_publisher(TwistWithCovarianceStamped, "robot_twist", 10)
         self.explore_publisher = self.create_publisher(Bool, "explore", 10)
+        self.waypoint_start_publisher = self.create_publisher(Bool, "waypoint_start", 10)
 
         self.imu_pub = self.create_publisher(Imu, "transformed_imu", 10)
 
@@ -89,6 +90,11 @@ class DeadManSwitch(Node):
             self.explore_publisher.publish(false_msg)
             self.get_logger().info("Stopping mapping, returning home...")
 
+        if msg.button[12] == 1:
+            true_msg = Bool()
+            true_msg.data = True
+            self.waypoint_start_publisher.publish(true_msg)
+            self.get_logger().info("Following waypoints")
 
     def nav_vel_callback(self, msg):
         if self.dead_man_switch and self.drive_state == "AUTO":

@@ -1,99 +1,99 @@
 version: "3.9"
 services:
-  ros_base1:
-    container_name: ros_base3
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-    stdin_open: true # Interactive shell
-    tty: true
-    environment:
-      - ROS_DOMAIN_ID=111
-      - DISPLAY=:1
-      - QT_X11_NO_MITSHM=1
-    network_mode: host # Networking and IPC for ROS 2
-    ipc: host
-    privileged: true
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2 rviz2"
+  # ros_base1:
+  #   container_name: ros_base3
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #   stdin_open: true # Interactive shell
+  #   tty: true
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #     - DISPLAY=:1
+  #     - QT_X11_NO_MITSHM=1
+  #   network_mode: host # Networking and IPC for ROS 2
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2 rviz2"
 
-  aria_node:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
+  # aria_node:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 run ariaNode ariaNode -rp /dev/ttyUSB0"
 
-  other_nodes:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
+  # other_nodes:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes launch.py"
 
-  imu_container:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"
+  # imu_container:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #   command: /bin/bash -c "ros2 launch phidgets_spatial spatial-launch.py"
   navigation_container:
     build:
       context: .
@@ -116,35 +116,35 @@ services:
     environment:
       - ROS_DOMAIN_ID=111
     command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes navigation.launch.py"
-  camera_container:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    devices:
-      - "/dev/video0:/dev/video0"
-    volumes:
-      - "/dev:/dev"
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-      - "/home/group10/Documents/proect2-3/project2/photos:/photos"
-      - "/home/group10/Documents/proect2-3/project2/number_photos:/number_photos"
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-      - QT_X11_NO_MITSHM=1
-      - DISPLAY= :1
-    command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes camera.launch.py"
+  # camera_container:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   devices:
+  #     - "/dev/video0:/dev/video0"
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - /tmp/.X11-unix:/tmp/.X11-unix
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #     - "/home/group10/Documents/proect2-3/project2/photos:/photos"
+  #     - "/home/group10/Documents/proect2-3/project2/number_photos:/number_photos"
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #     - QT_X11_NO_MITSHM=1
+  #     - DISPLAY= :1
+  #   command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes camera.launch.py"
   # rosbag_container:
   #   build:
   #     context: .
@@ -167,8 +167,7 @@ services:
   #     - 'c *:* mrw'
   #   environment:
   #     - ROS_DOMAIN_ID=111
-  #   user: "${UID}:${GID}"
-  #   command: /bin/bash -c "ros2 bag record /cmd_vel -o /workspaces/project2/project2/rosbags/projectBag"
+  #   command: /bin/bash -c "ros2 bag record -a -o /workspaces/project2/project2/rosbags/projectBag"
   gui_container:
     build:
       context: .

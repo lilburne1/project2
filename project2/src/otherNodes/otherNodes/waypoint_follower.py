@@ -28,6 +28,13 @@ class WaypointFollower(Node):
             10
         )
 
+        self.waypoint_start = self.create_subscription(
+            Bool,
+            "waypoint_start",
+            self.waypoint_following,
+            10
+        )
+
         # self.start_waypoint = self.create_subscription 
         nav = BasicNavigator()
 
