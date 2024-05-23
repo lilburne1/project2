@@ -16,6 +16,11 @@ def generate_launch_description():
         }.items()
     )
 
+    robot_position = Node(
+        package="otherNodes",
+        executable="robot_position"
+    )
+
     explorer = Node(
         package="otherNodes",
         executable="explorer"
@@ -28,6 +33,7 @@ def generate_launch_description():
     
     return LaunchDescription([
         navigation,
-        explorer
+        explorer, 
+        robot_position
         # waypoint_follower
     ])
