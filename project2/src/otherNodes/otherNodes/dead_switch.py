@@ -69,7 +69,7 @@ class DeadManSwitch(Node):
             self.dead_man_switch = False
             log_msg = String()
             log_msg.data = "Deadman switch is OFF"
-            self.web_logger_pub.publish(log_msg)
+            #self.web_logger_pub.publish(log_msg)
 
         # Controls state of robots - either AUTO or MANUAL
         if msg.buttons[0] == 1 and self.drive_state != "AUTO":
@@ -113,7 +113,7 @@ class DeadManSwitch(Node):
             self.publish_stop_message()
 
     def cmd_vel_callback(self, msg):
-        if self.dead_man_switch and  self.drive_state == "AUTO":
+        if self.dead_man_switch and self.drive_state == "AUTO":
             self.aria_vel_publisher.publish(msg)
 
             twist_cov_msg = self.create_twist_with_covariance(msg)
