@@ -55,11 +55,11 @@ class Explorer(Node):
         x = msg.pose.position.x
         y = msg.pose.position.y
 
-        if x > 7.5 or x < -7.5:
+        if x > 6.5 or x < -6.5:
             self.turn()
         else:
             self.straight()
-        if y > 7.5 or y < -7.5:
+        if y > 6.5 or y < -6.5:
             self.turn()
         else:
             self.straight()

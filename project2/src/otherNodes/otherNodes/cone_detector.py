@@ -65,7 +65,6 @@ class ConeDetector(Node):
             self.get_logger().error(f"Could not convert image: {e}")
             return
 
-        self.get_logger().info(f"Image size: {bgr_image.shape}")
 
         hsv_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2HSV)
 

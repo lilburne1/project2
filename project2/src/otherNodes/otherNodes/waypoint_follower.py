@@ -20,13 +20,6 @@ class WaypointFollower(Node):
             10
         )
 
-        self.waypoint_subscriber = self.create_subscription(
-            Bool,
-            "waypoint_input",
-            self.waypoint,
-            10
-        )
-
         self.numbers = {}
         self.current_goal_index = 0
         self.goals = []
@@ -38,17 +31,6 @@ class WaypointFollower(Node):
         self.numbers[number] = (x, y)
 
         self.get_logger().info(new_point)
-
-    def waypoint(self, msg):
-        user_input = msg.data
-        number_goals = user_input.split(",")
-        for number in number_goals:
-            if number in self.numbers:
-                self.goals.append(self.numbers[number])
-        self.goals.append((0, 0))
-        
-        self.current_goal_index = 0
-        self.send_next_goal()
 
     def send_next_goal(self):
         goal = self.goals[self.current_goal_index]
