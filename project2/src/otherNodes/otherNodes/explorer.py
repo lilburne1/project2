@@ -32,7 +32,8 @@ class Explorer(Node):
         )
         
         self.explore_state = False
-        self.cmd_vel_nav_publisher = self.create_publisher(Twist, "cmd_vel_nav", 10)
+
+        self.cmd_vel_nav_publisher = self.create_publisher(Twist, "cmd_vel_nav", 20)
 
     def explore_callback(self, msg):
         if msg.data == True:
@@ -42,7 +43,7 @@ class Explorer(Node):
             
     def lidar_callback(self, msg):
         angle_increment = np.degrees(msg.angle_increment)
-        angle_filter = int(40/angle_increment)
+        angle_filter = int(35/angle_increment)
 
         middle_index = int((270/angle_increment)/2)
         top_index = int(middle_index + angle_filter)
@@ -85,7 +86,7 @@ class Explorer(Node):
 
     def straight(self):
         msg = Twist()
-        msg.linear.x = 0.5 
+        msg.linear.x = 0.5
         msg.linear.y = 0.0
         msg.linear.z = 0.0
         msg.angular.x = 0.0

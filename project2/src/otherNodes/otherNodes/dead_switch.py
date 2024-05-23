@@ -40,6 +40,14 @@ class DeadManSwitch(Node):
             10
         )
 
+        # Creates subscription to cmd_vel_nav
+        self.cmd_vel_subscription = self.create_subscription(
+            Twist,
+            "/cmd_vel",
+            self.nav_vel_callback,
+            10
+        )
+
         self.imu_sub = self.create_subscription(
             Imu,
             "/imu/data_raw",
@@ -47,7 +55,7 @@ class DeadManSwitch(Node):
             10
         )
 
-        self.cmd_vel_publisher = self.create_publisher(Twist, "cmd_vel", 10)
+        self.aria_vel_publisher = self.create_publisher(Twist, "aria_vel", 10)
         self.robot_twist_publisher = self.create_publisher(TwistWithCovarianceStamped, "robot_twist", 10)
         self.explore_publisher = self.create_publisher(Bool, "explore", 10)
 
@@ -84,7 +92,7 @@ class DeadManSwitch(Node):
 
     def nav_vel_callback(self, msg):
         if self.dead_man_switch and self.drive_state == "AUTO":
-            self.cmd_vel_publisher.publish(msg)
+            self.aria_vel_publisher.publish(msg)
 
             twist_cov_msg = self.create_twist_with_covariance(msg)
             self.robot_twist_publisher.publish(twist_cov_msg)
@@ -93,7 +101,16 @@ class DeadManSwitch(Node):
 
     def joy_vel_callback(self, msg):
         if self.dead_man_switch and  self.drive_state == "MANUAL":
-            self.cmd_vel_publisher.publish(msg)
+            self.aria_vel_publisher.publish(msg)
+
+            twist_cov_msg = self.create_twist_with_covariance(msg)
+            self.robot_twist_publisher.publish(twist_cov_msg)
+        else:
+            self.publish_stop_message()
+
+    def cmd_vel_callback(self, msg):
+        if self.dead_man_switch and  self.drive_state == "AUTO":
+            self.aria_vel_publisher.publish(msg)
 
             twist_cov_msg = self.create_twist_with_covariance(msg)
             self.robot_twist_publisher.publish(twist_cov_msg)
@@ -108,7 +125,7 @@ class DeadManSwitch(Node):
         stop_msg.angular.x = 0.0
         stop_msg.angular.y = 0.0
         stop_msg.angular.z = 0.0
-        self.cmd_vel_publisher.publish(stop_msg)
+        self.aria_vel_publisher.publish(stop_msg)
 
         twist_cov_msg = self.create_twist_with_covariance(stop_msg)
         self.robot_twist_publisher.publish(twist_cov_msg)

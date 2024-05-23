@@ -35,7 +35,7 @@ class ariaNode : public rclcpp::Node {
             currentRotationSpeed = rotationSpeed;
 
             cmdVelSub = create_subscription<geometry_msgs::msg::Twist> (
-                "cmd_vel", 10, std::bind(&ariaNode::cmdVelCallback, this, std::placeholders::_1)
+                "aria_vel", 10, std::bind(&ariaNode::cmdVelCallback, this, std::placeholders::_1)
             );    
         }
 

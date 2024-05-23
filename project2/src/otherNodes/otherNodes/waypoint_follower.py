@@ -21,14 +21,23 @@ class WaypointFollower(Node):
             10
         )
 
-        self.waypoints_subscriber = self.create_subscription(
+        self.waypoint_subscriber = self.create_subscription(
             Float32MultiArray,
             "waypoints",
             self.waypoints,
             10
         )
 
+        # self.start_waypoint = self.create_subscription 
         nav = BasicNavigator()
+
+        init_pose = PoseStamped()
+        init_pose.header.frame_id = 'map'  
+        init_pose.header.stamp = self.get_clock().now().to_msg()
+        init_pose.pose.position.x = 0.0
+        init_pose.pose.position.y = 0.0
+        init_pose.pose.position.z = 0.0  
+        nav.setInitialPose(init_pose)
 
     def new_number(self, msg):
         message = msg.data.split(',')
@@ -58,61 +67,22 @@ class WaypointFollower(Node):
                 PoseList.append(coord)
                 # Log the waypoint and its coordinates
                 self.get_logger().info(f'Waypoint {waypoint}: (x={self.number_coords[waypoint][0]}, y={self.number_coords[waypoint][1]})')
-            
 
-            
+        coord = PoseStamped()
+        coord.header.frame_id = 'map'  
+        coord.header.stamp = self.get_clock().now().to_msg()
+        coord.pose.position.x = 0.0
+        coord.pose.position.y = 0.0
+        coord.pose.position.z = 0.0  
+        coord.pose.orientation.w = 1.0  
+        PoseList.append(coord)
 
+        self.nav.goThroughPoses(PoseList)
 
+def main(args = None):
+    rclpy.init(args=args)
+    waypoint_follower = WaypointFollower()
+    rclpy.spin(waypoint_follower)
 
-
-
-
-
-#     def send_next_goal(self):
-#         goal = self.goals[self.current_goal_index]
-#         self.current_goal_index += 1
-
-#         pose = PoseStamped()
-#         pose.header.frame_id = 'map'
-#         pose.header.stamp = self.get_clock().now().to_msg()
-#         pose.pose.position.x = goal[0]
-#         pose.pose.position.y = goal[1]
-#         pose.pose.orientation.w = 1.0
-
-#         goal_msg = NavigateToPose.Goal()
-#         goal_msg.pose = pose
-
-#         information = "Going to ({goal[0]}, {goal[1]})"
-#         self.get_logger().info(information)
-
-#         self.nav_client.send_goal_async(goal_msg).add_done_callback(self.goal_response_callback)
-
-#     def goal_response_callback(self, future):
-#         goal_handle = future.result()
-#         if not goal_handle.accepted:
-#             self.get_logger().info('Goal rejected')
-#             self.send_next_goal()
-#             return
-
-#         self.get_logger().info('Goal accepted')
-#         goal_handle.result().add_done_callback(self.result_callback)
-
-#     def result_callback(self, future):
-#         result = future.result().result
-#         if result.result == NavigateToPose.Result.SUCCESS:
-#             self.get_logger().info('Goal succeeded')
-#         else:
-#             self.get_logger().info('Goal failed')
-
-#         self.send_next_goal()
-
-# def main(args = None):
-#     rclpy.init(args=args)
-#     waypoint_follower = WaypointFollower()
-#     rclpy.spin(waypoint_follower)
-
-#     waypoint_follower.destroy_node()
-#     rclpy.shutdown()
-
-# if __name__ == "__main__":
-#     main()
+    waypoint_follower.destroy_node()
+    rclpy.shutdown()
