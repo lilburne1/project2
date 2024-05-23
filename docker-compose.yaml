@@ -191,4 +191,4 @@ services:
     environment:
       - ROS_DOMAIN_ID=111
     user: "${UID}:${GID}"
-    command: /bin/bash -c "ros2 launch rosbridge_server rosbridge_websocket.launch.xml"
+    command: /bin/bash -c "ros2 launch rosbridge_server rosbridge_websocket_launch.xml"

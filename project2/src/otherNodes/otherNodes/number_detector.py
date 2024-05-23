@@ -49,7 +49,7 @@ class NumberDetector(Node):
 
         self.markers = {}
         self.marker_id = 0
-        self.save_directory = "/numberphotos"
+        self.save_directory = "/number_photos"
         if not os.path.exists(self.save_directory):
             os.makedirs(self.save_directory)
 
@@ -97,7 +97,7 @@ class NumberDetector(Node):
                 self.get_logger().info(f"Prediction: {predicted_digit} with confidence: {confidence}")
 
                 # Display results if confidence is high
-                if confidence > 0.999:
+                if confidence > 0.97:
                     x, y, w, h = bbox
                     cv2.rectangle(display_frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     cv2.putText(display_frame, f"{predicted_digit} ({confidence:.2f})", (10, 60),
@@ -126,6 +126,7 @@ class NumberDetector(Node):
                 thresholded_msg.header.frame_id = msg.header.frame_id
                 self.cropped_pub.publish(cropped_msg)
                 self.thresholded_pub.publish(thresholded_msg)
+                time.sleep(3)
             else:
                 self.get_logger().info("No clusters found.")
                 empty_image = np.zeros((200, 200), dtype=np.uint8)
@@ -142,7 +143,7 @@ class NumberDetector(Node):
             self.get_logger().error(f"Error in detect_number: {e}")
 
         # Wait 3 seconds before looking again
-        time.sleep(3)
+    
 
     def find_clusters(self, image):
         try:

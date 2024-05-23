@@ -8,6 +8,7 @@ import numpy as np
 import tf2_ros
 from rclpy.duration import Duration
 import os
+import time
 
 class ConeDetector(Node):
     def __init__(self):
@@ -120,6 +121,7 @@ class ConeDetector(Node):
 
             processed_image_msg = self.bridge.cv2_to_imgmsg(bgr_image, encoding="bgr8")
             self.image_publisher.publish(processed_image_msg)
+            time.sleep(1)
         except CvBridgeError as e:
          self.get_logger().error(f"Could not convert processed image: {e}")
 
