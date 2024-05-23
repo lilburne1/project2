@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, Pose, Twist
 from sensor_msgs.msg import LaserScan
-from nav2_msgs.action import NavigateToPose
+from nav2_simple_commander.robot_navigator import BasicNavigator
 from rclpy.action import ActionClient
 import math
 from std_msgs.msg import Bool
@@ -10,13 +10,15 @@ from std_msgs.msg import Bool
 class Explorer(Node):
     def __init__(self):
         super().__init__('explorer')
-        self.nav_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
-        self.nav_client.wait_for_server()
+        self.get_logger().info("WHYY")
+
+        # Initialize the navigator
+        self.navigator = BasicNavigator()
 
         self.explore_subscriber = self.create_subscription(
             Bool,
             "explore",
-            self.explore, 
+            self.explore,
             10
         )
 
@@ -33,7 +35,7 @@ class Explorer(Node):
         half_area = area_size / 2
 
         # Adjust the starting point to (0,0) and cover the entire area
-        y = 0
+        y = 0.0
         direction = 1
 
         while y <= half_area:
@@ -72,36 +74,28 @@ class Explorer(Node):
         pose = PoseStamped()
         pose.header.frame_id = 'map'
         pose.header.stamp = self.get_clock().now().to_msg()
-        pose.pose.position.x = goal[0]
-        pose.pose.position.y = goal[1]
+        pose.pose.position.x = float(goal[0])
+        pose.pose.position.y = float(goal[1])
         pose.pose.orientation.w = 1.0
 
-        goal_msg = NavigateToPose.Goal()
-        goal_msg.pose = pose
+        self.get_logger().info(f'Going to ({goal[0]}, {goal[1]})')
 
-        information = "Going to ({goal[0]}, {goal[1]})"
-        self.get_logger().info(information)
+        self.navigator.goToPose(pose)
 
-        self.nav_client.send_goal_async(goal_msg).add_done_callback(self.goal_response_callback)
+        # Check the result
+        while not self.navigator.isTaskComplete():
+            pass
 
-    def goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected')
-            self.send_next_goal()
-            return
-
-        self.get_logger().info('Goal accepted')
-        goal_handle.result().add_done_callback(self.result_callback)
-
-    def result_callback(self, future):
-        result = future.result().result
-        if result.result == NavigateToPose.Result.SUCCESS:
+        result = self.navigator.getResult()
+        if result == NavigationResult.SUCCEEDED:
             self.get_logger().info('Goal succeeded')
-        else:
+        elif result == NavigationResult.CANCELED:
+            self.get_logger().info('Goal canceled')
+        elif result == NavigationResult.FAILED:
             self.get_logger().info('Goal failed')
 
         self.send_next_goal()
+ 
 
 def main(args = None):
     rclpy.init(args=args)

@@ -143,26 +143,27 @@ services:
       - QT_X11_NO_MITSHM=1
       - DISPLAY= :1
     command: /bin/bash -c "source ./install/setup.bash && ros2 launch otherNodes camera.launch.py"
-  rosbag_container:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ROS_DISTRO: humble
-      target: base
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    privileged: true
-    volumes:
-      - "/dev:/dev"
-      - type: bind
-        source: /dev/shm
-        target: /dev/shm
-      - "/home/group10/Documents/project2/project2/rosbags:/rosbags"
-    device_cgroup_rules:
-      - 'c *:* mrw'
-    environment:
-      - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "ros2 bag record -a -o /rosbags/projectBag"
+  # rosbag_container:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ROS_DISTRO: humble
+  #     target: base
+  #   stdin_open: true
+  #   tty: true
+  #   network_mode: host
+  #   ipc: host
+  #   privileged: true
+  #   volumes:
+  #     - "/dev:/dev"
+  #     - type: bind
+  #       source: /dev/shm
+  #       target: /dev/shm
+  #     - "/home/group10/Documents/project2/project2/rosbags:/workspaces/project2/project2/rosbags"
+  #   device_cgroup_rules:
+  #     - 'c *:* mrw'
+  #   environment:
+  #     - ROS_DOMAIN_ID=111
+  #   user: "${UID}:${GID}"
+  #   command: /bin/bash -c "ros2 bag record /cmd_vel -o /workspaces/project2/project2/rosbags/projectBag"

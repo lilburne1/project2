@@ -68,9 +68,9 @@ class DeadManSwitch(Node):
             self.drive_state = "MANUAL"
 
         if msg.buttons[2] == 1:
-            true_msg = Bool
+            true_msg = Bool()
             true_msg.data = True
-            self.explore_publisher.publish()
+            self.explore_publisher.publish(true_msg)
 
     def nav_vel_callback(self, msg):
         if self.dead_man_switch and self.drive_state == "AUTO":
