@@ -160,8 +160,9 @@ services:
       - type: bind
         source: /dev/shm
         target: /dev/shm
+      - "/home/group10/Documents/project2/project2/rosbags:/rosbags"
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
       - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "ros2 launch rosbridge_server rosbridge_websocket.launch"
+    command: /bin/bash -c "ros2 bag record -a -o /rosbags/projectBag"
