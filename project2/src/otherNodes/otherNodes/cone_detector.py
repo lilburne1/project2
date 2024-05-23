@@ -9,16 +9,17 @@ import tf2_ros
 from rclpy.duration import Duration
 import os
 import time
+from std_msgs.msg import String
 
 class ConeDetector(Node):
     def __init__(self):
         super().__init__("cone_detector")
-        self.get_logger().info("Initializing ConeDetector node")
 
         self.bridge = CvBridge()
         self.marker_publisher = self.create_publisher(Marker, 'cone_marker', 10)
         self.marker_array_publisher = self.create_publisher(MarkerArray, 'cone_marker_array', 10)
         self.image_publisher = self.create_publisher(Image, 'processed_image', 10)
+        self.web_logger_pub = self.create_publisher(String, 'web_logger', 10)
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
         self.camera_subscription = self.create_subscription(
@@ -33,8 +34,6 @@ class ConeDetector(Node):
         self.marker_id = 0
         self.save_directory = "/photos"
 
-    
-
     def is_marker_nearby(self):
         try:
             if not self.markers:
@@ -48,11 +47,9 @@ class ConeDetector(Node):
                     (robot_position[2] - marker_position[2])**2
                 )
                 if distance < 2.0:  # Define a suitable distance threshold
-                   # self.get_logger().info(f"Existing marker {marker_id} detected nearby, skipping cone detection")
                     return True
             return False
-        except Exception as e:
-          #  self.get_logger().error(f'Could not check for nearby marker: {e}')
+        except Exception:
             return False
 
     def detect_cone(self, msg):
@@ -61,11 +58,8 @@ class ConeDetector(Node):
 
         try:
             bgr_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-        except CvBridgeError as e:
-          #  self.get_logger().error(f"Could not convert image: {e}")
+        except CvBridgeError:
             return
-
-      #  self.get_logger().info(f"Image size: {bgr_image.shape}")
 
         hsv_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2HSV)
 
@@ -97,7 +91,6 @@ class ConeDetector(Node):
                 x, y, w, h = stats[i, cv2.CC_STAT_LEFT], stats[i, cv2.CC_STAT_TOP], stats[i, cv2.CC_STAT_WIDTH], stats[i, cv2.CC_STAT_HEIGHT]
                 cv2.rectangle(bgr_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 self.publish_cone_marker()
-              #  self.get_logger().info("ORANGE/RED/YELLOW OBJECT SEEN")
                 detected = True
 
         if detected:
@@ -115,15 +108,19 @@ class ConeDetector(Node):
             cv2.putText(bgr_image, position_text, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             # Save the processed image with a unique name
-            image_path = os.path.join(self.save_directory, f"processed_image_{self.marker_id}.jpg")
+            image_path = os.path.join(self.save_directory, f"{position_text}_{self.marker_id}.jpg")
             cv2.imwrite(image_path, bgr_image)
-         #   self.get_logger().info(f"Processed image saved at: {image_path}")
+
+            # Publish a message to web_logger
+            log_msg = String()
+            log_msg.data = f"CONE DETECTED AND IMAGE SAVED: {image_path}"
+            self.web_logger_pub.publish(log_msg)
 
             processed_image_msg = self.bridge.cv2_to_imgmsg(bgr_image, encoding="bgr8")
             self.image_publisher.publish(processed_image_msg)
             time.sleep(1)
-        except CvBridgeError as e:
-         self.get_logger().error(f"Could not convert processed image: {e}")
+        except CvBridgeError:
+            pass
 
     def publish_cone_marker(self):
         try:
@@ -149,9 +146,8 @@ class ConeDetector(Node):
             self.markers[marker.id] = (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z)
             self.marker_publisher.publish(marker)
             self.publish_marker_array()
-            self.log_markers()
-        except Exception as e:
-            self.get_logger().error(f'Could not transform map to base_link: {e}')
+        except Exception:
+            pass
 
     def publish_marker_array(self):
         marker_array = MarkerArray()
@@ -175,17 +171,13 @@ class ConeDetector(Node):
             marker_array.markers.append(marker)
         self.marker_array_publisher.publish(marker_array)
 
-    def log_markers(self):
-        marker_list = "\n".join([f"Marker ID: {marker_id}, Position: {position}" for marker_id, position in self.markers.items()])
-        self.get_logger().info(f"Markers:\n{marker_list}")
-
 def main(args=None):
     rclpy.init(args=args)
     try:
         node = ConeDetector()
         rclpy.spin(node)
-    except Exception as e:
-        rclpy.get_logger().error(f"Failed to initialize or spin the node: {e}")
+    except Exception:
+        pass
     finally:
         node.destroy_node()
         rclpy.shutdown()
@@ -193,6 +185,203 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
+
+# import rclpy
+# from rclpy.node import Node
+# from sensor_msgs.msg import Image
+# from visualization_msgs.msg import Marker, MarkerArray
+# from cv_bridge import CvBridge, CvBridgeError
+# import cv2
+# import numpy as np
+# import tf2_ros
+# from rclpy.duration import Duration
+# import os
+# import time
+
+# class ConeDetector(Node):
+#     def __init__(self):
+#         super().__init__("cone_detector")
+#         self.get_logger().info("Initializing ConeDetector node")
+
+#         self.bridge = CvBridge()
+#         self.marker_publisher = self.create_publisher(Marker, 'cone_marker', 10)
+#         self.marker_array_publisher = self.create_publisher(MarkerArray, 'cone_marker_array', 10)
+#         self.image_publisher = self.create_publisher(Image, 'processed_image', 10)
+#         self.tf_buffer = tf2_ros.Buffer()
+#         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+#         self.camera_subscription = self.create_subscription(
+#             Image,
+#             "oak/rgb/image_raw",
+#             self.detect_cone,
+#             10
+#         )
+#         self.markers = {}
+#         self.cone_detected_count = 0
+#         self.detection_threshold = 6  # Set your detection threshold here
+#         self.marker_id = 0
+#         self.save_directory = "/photos"
+
+    
+
+#     def is_marker_nearby(self):
+#         try:
+#             if not self.markers:
+#                 return False
+#             trans = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time(), Duration(seconds=1.0))
+#             robot_position = (trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z)
+#             for marker_id, marker_position in self.markers.items():
+#                 distance = np.sqrt(
+#                     (robot_position[0] - marker_position[0])**2 +
+#                     (robot_position[1] - marker_position[1])**2 +
+#                     (robot_position[2] - marker_position[2])**2
+#                 )
+#                 if distance < 2.0:  # Define a suitable distance threshold
+#                    # self.get_logger().info(f"Existing marker {marker_id} detected nearby, skipping cone detection")
+#                     return True
+#             return False
+#         except Exception as e:
+#           #  self.get_logger().error(f'Could not check for nearby marker: {e}')
+#             return False
+
+#     def detect_cone(self, msg):
+#         if self.is_marker_nearby():
+#             return
+
+#         try:
+#             bgr_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+#         except CvBridgeError as e:
+#           #  self.get_logger().error(f"Could not convert image: {e}")
+#             return
+
+#       #  self.get_logger().info(f"Image size: {bgr_image.shape}")
+
+#         hsv_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2HSV)
+
+#         # Define strict HSV ranges for orange, red, and yellow
+#         lower_orange = np.array([10, 100, 100])
+#         upper_orange = np.array([25, 255, 255])
+#         lower_red1 = np.array([0, 100, 100])
+#         upper_red1 = np.array([10, 255, 255])
+#         lower_red2 = np.array([160, 100, 100])
+#         upper_red2 = np.array([180, 255, 255])
+#         lower_yellow = np.array([25, 100, 100])
+#         upper_yellow = np.array([35, 255, 255])
+
+#         # Create masks for the color ranges
+#         orange_mask = cv2.inRange(hsv_image, lower_orange, upper_orange)
+#         red_mask1 = cv2.inRange(hsv_image, lower_red1, upper_red1)
+#         red_mask2 = cv2.inRange(hsv_image, lower_red2, upper_red2)
+#         yellow_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
+
+#         # Combine the masks
+#         mask = cv2.bitwise_or(cv2.bitwise_or(orange_mask, red_mask1), cv2.bitwise_or(red_mask2, yellow_mask))
+
+#         num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+
+#         detected = False
+#         for i in range(1, num_labels):
+#             area = stats[i, cv2.CC_STAT_AREA]
+#             if area > 70000:  # Increase the area threshold for larger objects
+#                 x, y, w, h = stats[i, cv2.CC_STAT_LEFT], stats[i, cv2.CC_STAT_TOP], stats[i, cv2.CC_STAT_WIDTH], stats[i, cv2.CC_STAT_HEIGHT]
+#                 cv2.rectangle(bgr_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+#                 self.publish_cone_marker()
+#               #  self.get_logger().info("ORANGE/RED/YELLOW OBJECT SEEN")
+#                 detected = True
+
+#         if detected:
+#             self.cone_detected_count += 1
+
+#         if self.cone_detected_count >= self.detection_threshold:
+#             # Create a success message on the image
+#             cv2.putText(bgr_image, "SUCCESS", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+#         try:
+#             # Get robot position and add to image
+#             trans = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time(), Duration(seconds=1.0))
+#             robot_position = (trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z)
+#             position_text = f"Position: x={robot_position[0]:.2f}, y={robot_position[1]:.2f}, z={robot_position[2]:.2f}"
+#             cv2.putText(bgr_image, position_text, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+#             # Save the processed image with a unique name
+#             image_path = os.path.join(self.save_directory, f"processed_image_{self.marker_id}.jpg")
+#             cv2.imwrite(image_path, bgr_image)
+#          #   self.get_logger().info(f"Processed image saved at: {image_path}")
+
+#             processed_image_msg = self.bridge.cv2_to_imgmsg(bgr_image, encoding="bgr8")
+#             self.image_publisher.publish(processed_image_msg)
+#             time.sleep(1)
+#         except CvBridgeError as e:
+#          self.get_logger().error(f"Could not convert processed image: {e}")
+
+#     def publish_cone_marker(self):
+#         try:
+#             trans = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time(), Duration(seconds=1.0))
+#             marker = Marker()
+#             marker.header.frame_id = "map"
+#             marker.header.stamp = self.get_clock().now().to_msg()
+#             marker.type = Marker.SPHERE
+#             marker.action = Marker.ADD
+#             marker.scale.x = 0.2
+#             marker.scale.y = 0.2
+#             marker.scale.z = 0.2
+#             marker.color.a = 1.0
+#             marker.color.r = 1.0
+#             marker.color.g = 0.0
+#             marker.color.b = 0.0
+#             marker.pose.position.x = trans.transform.translation.x
+#             marker.pose.position.y = trans.transform.translation.y
+#             marker.pose.position.z = trans.transform.translation.z
+#             marker.pose.orientation = trans.transform.rotation
+#             marker.id = self.marker_id
+#             self.marker_id += 1
+#             self.markers[marker.id] = (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z)
+#             self.marker_publisher.publish(marker)
+#             self.publish_marker_array()
+#             self.log_markers()
+#         except Exception as e:
+#             self.get_logger().error(f'Could not transform map to base_link: {e}')
+
+#     def publish_marker_array(self):
+#         marker_array = MarkerArray()
+#         for marker_id, position in self.markers.items():
+#             marker = Marker()
+#             marker.header.frame_id = "map"
+#             marker.header.stamp = self.get_clock().now().to_msg()
+#             marker.type = Marker.SPHERE
+#             marker.action = Marker.ADD
+#             marker.scale.x = 0.2
+#             marker.scale.y = 0.2
+#             marker.scale.z = 0.2
+#             marker.color.a = 1.0
+#             marker.color.r = 1.0
+#             marker.color.g = 0.0
+#             marker.color.b = 0.0
+#             marker.pose.position.x = position[0]
+#             marker.pose.position.y = position[1]
+#             marker.pose.position.z = position[2]
+#             marker.id = marker_id
+#             marker_array.markers.append(marker)
+#         self.marker_array_publisher.publish(marker_array)
+
+#     def log_markers(self):
+#         marker_list = "\n".join([f"Marker ID: {marker_id}, Position: {position}" for marker_id, position in self.markers.items()])
+#         self.get_logger().info(f"Markers:\n{marker_list}")
+
+# def main(args=None):
+#     rclpy.init(args=args)
+#     try:
+#         node = ConeDetector()
+#         rclpy.spin(node)
+#     except Exception as e:
+#         rclpy.get_logger().error(f"Failed to initialize or spin the node: {e}")
+#     finally:
+#         node.destroy_node()
+#         rclpy.shutdown()
+#         cv2.destroyAllWindows()
+
+# if __name__ == '__main__':
+#     main()
 
 
 # import rclpy

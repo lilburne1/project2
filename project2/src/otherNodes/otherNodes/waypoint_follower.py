@@ -1,11 +1,8 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped, Pose, Twist
-from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float32MultiArray
-import math
+from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Float32MultiArray, String, Bool
 from nav2_simple_commander.robot_navigator import BasicNavigator
-from std_msgs.msg import String, Bool
 
 class WaypointFollower(Node):
     def __init__(self):
@@ -35,8 +32,16 @@ class WaypointFollower(Node):
             10
         )
 
-        # self.start_waypoint = self.create_subscription 
-        nav = BasicNavigator()
+        self.explore_subscription = self.create_subscription(
+            Bool,
+            "explore",
+            self.go_home,
+            10
+        )
+
+        self.web_logger_pub = self.create_publisher(String, 'web_logger', 10)
+
+        self.nav = BasicNavigator()
 
         init_pose = PoseStamped()
         init_pose.header.frame_id = 'map'  
@@ -44,25 +49,22 @@ class WaypointFollower(Node):
         init_pose.pose.position.x = 0.0
         init_pose.pose.position.y = 0.0
         init_pose.pose.position.z = 0.0  
-        nav.setInitialPose(init_pose)
+        self.nav.setInitialPose(init_pose)
 
     def new_number(self, msg):
         message = msg.data.split(',')
         number = message[0]
-        x = message[1]
-        y = message[2]
+        x = float(message[1])
+        y = float(message[2])
         
-        self.numbers[number] = (x, y)
-
-        new_point = "New number {number}: ({x},{y})"
-        self.get_logger().info(new_point)
+        self.number_coords[number] = (x, y)
 
     def waypoints(self, msg):
-        self.waypoints = msg.data
+        self.waypoint_list = msg.data
 
     def waypoint_following(self, msg):
         PoseList = [] 
-        if self.waypoint_list != None and len(self.number_coords) >= 3:
+        if self.waypoint_list is not None and len(self.number_coords) >= 3:
             for waypoint in self.waypoint_list:
                 coord = PoseStamped()
                 coord.header.frame_id = 'map'  
@@ -72,8 +74,10 @@ class WaypointFollower(Node):
                 coord.pose.position.z = 0.0  
                 coord.pose.orientation.w = 1.0  
                 PoseList.append(coord)
-                # Log the waypoint and its coordinates
-                self.get_logger().info(f'Waypoint {waypoint}: (x={self.number_coords[waypoint][0]}, y={self.number_coords[waypoint][1]})')
+                # Publish to web_logger
+                log_msg = String()
+                log_msg.data = f"driving to coordinate (x={self.number_coords[waypoint][0]}, y={self.number_coords[waypoint][1]})"
+                self.web_logger_pub.publish(log_msg)
 
         coord = PoseStamped()
         coord.header.frame_id = 'map'  
@@ -86,10 +90,25 @@ class WaypointFollower(Node):
 
         self.nav.goThroughPoses(PoseList)
 
-def main(args = None):
+    def go_home(self, msg):
+        if not msg.data:
+            coord = PoseStamped()
+            coord.header.frame_id = 'map'  
+            coord.header.stamp = self.get_clock().now().to_msg()
+            coord.pose.position.x = 0.0
+            coord.pose.position.y = 0.0
+            coord.pose.position.z = 0.0  
+            coord.pose.orientation.w = 1.0  
+
+            self.nav.goToPose(coord)
+
+def main(args=None):
     rclpy.init(args=args)
     waypoint_follower = WaypointFollower()
     rclpy.spin(waypoint_follower)
 
     waypoint_follower.destroy_node()
     rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

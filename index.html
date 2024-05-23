@@ -3,19 +3,7 @@
 
 <head>
     <title>ROS GUI</title>
-    <h2>Publish for Waypoints</h2>
-    <form id="waypoints-form">
-        <label for="number1">Waypoint 1:</label>
-        <input type="text" id="waypoint1" name="waypoint1" value="0"><br>
-        <label for="number2">Waypoint 2:</label>
-        <input type="text" id="waypoint2" name="waypoint2" value="0"><br>
-        <label for="number3">Waypoint 3:</label>
-        <input type="text" id="waypoint3" name="waypoint3" value="0"><br>
-        <input type="submit" value="Submit">
-    </form>
-
-    <script type="text/javascript"
-        src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
     <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
     <script type="text/javascript" src="http://cdn.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
     <script type="text/javascript" src="http://cdn.robotwebtools.org/nav2djs/current/nav2d.min.js"></script>
@@ -24,7 +12,23 @@
 
 <body>
     <h1>ROS GUI</h1>
+
+    <h2>Publish for Waypoints</h2>
+    <form id="waypoints-form">
+        <label for="waypoint1">Waypoint 1:</label>
+        <input type="text" id="waypoint1" name="waypoint1" value="0"><br>
+        <label for="waypoint2">Waypoint 2:</label>
+        <input type="text" id="waypoint2" name="waypoint2" value="0"><br>
+        <label for="waypoint3">Waypoint 3:</label>
+        <input type="text" id="waypoint3" name="waypoint3" value="0"><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <h2>Web Logger</h2>
+    <div id="web_logger_display"></div> <!-- Div to display the web logger messages -->
+
     <script type="text/javascript">
+        // Initialize ROS connection
         var ros = new ROSLIB.Ros({
             url: 'ws://localhost:9090'
         });
@@ -41,6 +45,7 @@
             console.log('Connection to websocket server closed.');
         });
 
+        // Waypoints publisher
         const waypointTopic = new ROSLIB.Topic({
             ros,
             name: "/waypoints",
@@ -60,10 +65,22 @@
 
             waypointTopic.publish(numbers);
         });
-    </script>
-    <hr>
-    <hr>
 
+        // Subscribe to the web_logger topic
+        const webLoggerTopic = new ROSLIB.Topic({
+            ros,
+            name: "/web_logger",
+            messageType: "std_msgs/String"
+        });
+
+        webLoggerTopic.subscribe(function (message) {
+            console.log("Received message on /web_logger: ", message.data); // Debugging
+            const loggerDisplayDiv = document.getElementById("web_logger_display");
+            const newLogEntry = document.createElement("p");
+            newLogEntry.textContent = message.data;
+            loggerDisplayDiv.appendChild(newLogEntry);
+        });
+    </script>
 </body>
 
 </html>
