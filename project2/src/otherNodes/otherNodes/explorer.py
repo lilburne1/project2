@@ -2,7 +2,6 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, Pose, Twist
 from sensor_msgs.msg import LaserScan
-from nav2_simple_commander.robot_navigator import BasicNavigator
 from rclpy.action import ActionClient
 import math
 from std_msgs.msg import Bool
@@ -25,13 +24,14 @@ class Explorer(Node):
         )
 
         self.pose_subscriber = self.create_subscription(
-            Pose,
+            PoseStamped,
             "robot_position",
             self.pose_callback,
             10
         )
 
         self.explore_state = True
+        self.cmd_vel_nav_publisher = self.create_publisher(Twist, "cmd_vel_nav", 10)
 
     def explore_callback(self, msg):
         if msg.data == True:
@@ -39,8 +39,55 @@ class Explorer(Node):
         else:
             self.explore_state = False
     
-    def lidar_subscriber(self, msg):
-        if msg
+    def lidar_callback(self, msg):
+        min_distance = 0.3  
+        dangerous = False
+
+        for i, distance in enumerate(msg.ranges):
+            if distance < min_distance:
+                dangerous = True
+                self.turn()
+                break
+        if not dangerous:
+            self.straight()
+            
+    def pose_callback(self, msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+
+        if x > 7.5 or x < -7.5:
+            self.turn()
+        else:
+            self.straight()
+        if y > 7.5 or y < -7.5:
+            self.turn()
+        else:
+            self.straight()
+    
+    def turn(self):
+        msg = Twist()
+        msg.linear.x = 0.0 # Set linear velocity to 0.5 m/s
+        msg.linear.y = 0.0
+        msg.linear.z = 0.0
+        msg.angular.x = 0.0
+        msg.angular.y = 0.0
+        msg.angular.z = 0.5
+        self.cmd_vel_nav_publisher.publish(msg)
+
+    def straight(self):
+        msg = Twist()
+        msg.linear.x = 0.5  # Set linear velocity to 0.5 m/s
+        msg.linear.y = 0.0
+        msg.linear.z = 0.0
+        msg.angular.x = 0.0
+        msg.angular.y = 0.0
+        msg.angular.z = 0.0
+        self.cmd_vel_nav_publisher.publish(msg)
+
+        
+
+
+    
 
 
 

@@ -1,7 +1,6 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
-from tf2_msgs.msg import TransformStamped
 from rclpy.duration import Duration
 from tf2_ros import TransformListener, Buffer, LookupException, ConnectivityException, ExtrapolationException
 
@@ -17,7 +16,7 @@ class RobotPosition(Node):
     def timer_callback(self):
         try:
             now = self.get_clock().now()
-            trans = self.tf_buffer.lookup_transform('map', 'base_link', now, timeout=Duration(seconds=1.0))
+            trans = self.tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
 
             pose_msg = PoseStamped()
             pose_msg.header.stamp = now.to_msg()
