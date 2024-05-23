@@ -29,8 +29,8 @@ class Explorer(Node):
             self.pose_callback,
             10
         )
-
-        self.explore_state = True
+        
+        self.explore_state = False
         self.cmd_vel_nav_publisher = self.create_publisher(Twist, "cmd_vel_nav", 10)
 
     def explore_callback(self, msg):
@@ -38,35 +38,37 @@ class Explorer(Node):
             self.explore_state = True
         else:
             self.explore_state = False
+            
     
     def lidar_callback(self, msg):
         min_distance = 0.4  
         dangerous = False
 
         for i, distance in enumerate(msg.ranges):
-            if distance < min_distance:
+            if distance < min_distance and self.explore_state == True:
                 dangerous = True
                 self.turn()
                 break
-        if not dangerous:
+        if not dangerous and self.explore_state == True:
             self.straight()
             
     def pose_callback(self, msg):
         x = msg.pose.position.x
         y = msg.pose.position.y
 
-        if x > 6.5 or x < -6.5:
-            self.turn()
-        else:
-            self.straight()
-        if y > 6.5 or y < -6.5:
-            self.turn()
-        else:
-            self.straight()
+        if self.explore_state:
+            if x > 5.5 or x < -5.5:
+                self.turn()
+            else:
+                self.straight()
+            if y > 5.5 or y < -5.5:
+                self.turn()
+            else:
+                self.straight()
     
     def turn(self):
         msg = Twist()
-        msg.linear.x = 0.0 # Set linear velocity to 0.5 m/s
+        msg.linear.x = 0.0
         msg.linear.y = 0.0
         msg.linear.z = 0.0
         msg.angular.x = 0.0
@@ -76,13 +78,18 @@ class Explorer(Node):
 
     def straight(self):
         msg = Twist()
-        msg.linear.x = 0.5  # Set linear velocity to 0.5 m/s
+        msg.linear.x = 0.5 
         msg.linear.y = 0.0
         msg.linear.z = 0.0
         msg.angular.x = 0.0
         msg.angular.y = 0.0
         msg.angular.z = 0.0
         self.cmd_vel_nav_publisher.publish(msg)
+    
+
+    
+
+    
 
         
 

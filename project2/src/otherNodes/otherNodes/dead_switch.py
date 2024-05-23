@@ -63,19 +63,24 @@ class DeadManSwitch(Node):
         # Controls state of robots - either AUTO or MANUAL
         if msg.buttons[0] == 1 and self.drive_state != "AUTO":
             self.drive_state = "AUTO"
+            self.get_logger().info("In automatic driving mode...")
             
         if msg.buttons[1] == 1 and self.drive_state != "MANUAL":
             self.drive_state = "MANUAL"
+            self.get_logger().info("In manual driving mode...")
 
         if msg.buttons[2] == 1:
             true_msg = Bool()
             true_msg.data = True
             self.explore_publisher.publish(true_msg)
+            self.get_logger().info("In automatic exploration mode...")
 
         if msg.buttons[11] == 1:
             false_msg = Bool()
             false_msg.data = False
             self.explore_publisher.publish(false_msg)
+            self.get_logger().info("Stopping mapping, returning home...")
+
 
     def nav_vel_callback(self, msg):
         if self.dead_man_switch and self.drive_state == "AUTO":

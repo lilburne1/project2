@@ -36,7 +36,6 @@ class WaypointGUI:
         # Publish numbers to ROS2 topic
         numbers_msg = Int32MultiArray(data=numbers)
         self.node.selected_numbers_pub.publish(numbers_msg)
-        print("Published selected numbers:", numbers)
         self.node.numbers_received = True
         self.parent.destroy()
  

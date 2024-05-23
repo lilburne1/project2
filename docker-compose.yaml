@@ -136,6 +136,7 @@ services:
       - type: bind
         source: /dev/shm
         target: /dev/shm
+      - "/home/group10/Deskto/photos:/photos"
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
