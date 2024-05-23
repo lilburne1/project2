@@ -137,6 +137,7 @@ services:
         source: /dev/shm
         target: /dev/shm
       - "/home/group10/Documents/proect2-3/project2/photos:/photos"
+      - "/home/group10/Documents/proect2-3/project2/number_photos:/number_photos"
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
@@ -190,4 +191,4 @@ services:
     environment:
       - ROS_DOMAIN_ID=111
     user: "${UID}:${GID}"
-    command: /bin/bash -c "ros2 launch rosbridge_server rosbridge_websocket.launch"
+    command: /bin/bash -c "ros2 launch rosbridge_server rosbridge_websocket.launch.xml"

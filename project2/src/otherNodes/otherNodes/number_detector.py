@@ -6,6 +6,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from visualization_msgs.msg import Marker, MarkerArray
 from cv_bridge import CvBridge
+from std_msgs.msg import String
 import tf2_ros
 from rclpy.duration import Duration
 import os
@@ -44,6 +45,7 @@ class NumberDetector(Node):
         self.cropped_pub = self.create_publisher(Image, 'number_detection/cropped', 10)
         self.thresholded_pub = self.create_publisher(Image, 'number_detection/thresholded', 10)
         self.finally_found_pub = self.create_publisher(Image, 'finally_found', 10)
+        self.number_coordinates = self.create_publisher(String, "number_coordinates", 10)
 
         self.markers = {}
         self.marker_id = 0
@@ -93,7 +95,7 @@ class NumberDetector(Node):
                 self.get_logger().info(f"Prediction: {predicted_digit} with confidence: {confidence}")
 
                 # Display results if confidence is high
-                if confidence > 0.96:
+                if confidence > 0.98:
                     x, y, w, h = bbox
                     cv2.rectangle(display_frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     cv2.putText(display_frame, f"{predicted_digit} ({confidence:.2f})", (10, 60),
@@ -150,7 +152,7 @@ class NumberDetector(Node):
             # Filter contours based on area and shape
             for contour in contours:
                 area = cv2.contourArea(contour)
-                if 40000 < area < 50000:  # Adjusted area range
+                if 1000 < area < 50000:  # Adjusted area range
                     x, y, w, h = cv2.boundingRect(contour)
                     aspect_ratio = w / float(h)
                     if 0.2 < aspect_ratio < 1.0:  # Aspect ratio range for digits
@@ -226,6 +228,9 @@ class NumberDetector(Node):
             marker.id = self.marker_id
             self.marker_id += 1
             self.markers[marker.id] = (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z)
+            # number_coord = String()
+            # number_coord.data = str("{},{},{}")
+            # self.number_coordinates_publisher.publish
             self.marker_publisher.publish(marker)
             self.publish_marker_array()
             self.log_markers()
