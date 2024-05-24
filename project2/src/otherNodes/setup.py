@@ -16,7 +16,8 @@ setup(
         ('share/' + package_name + '/config', ['config/ekf.yaml']),
         ('share/' + package_name + '/config', ['config/mapping.yaml']),
         ('share/' + package_name + '/config', ['config/navigation.yaml']),
-        ('share/' + package_name + '/models', ['models/robots/pioneer.urdf'])
+        ('share/' + package_name + '/models', ['models/robots/pioneer.urdf']),
+        ('share/' + package_name + '/rviz', ['rviz/ryan.rviz']),
     ],
     install_requires=['setuptools', 'rclpy', "nav2_simple_commander", "numpy", "cv2", "cv_bridge", "tf2", "argparse", "image_transport"],
     zip_safe=True,

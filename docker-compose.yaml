@@ -24,7 +24,7 @@ services:
         target: /dev/shm
     device_cgroup_rules:
       - 'c *:* mrw'
-    command: /bin/bash -c "source ./install/setup.bash && ros2 run rviz2 rviz2"
+    command: /bin/bash -c "source ./install/setup.bash && rviz2 -d ryan.rviz"
 
   aria_node:
     build:
@@ -162,7 +162,7 @@ services:
       - type: bind
         source: /dev/shm
         target: /dev/shm
-      - "/home/group10/Documents/project2/project2/rosbags:/workspaces/project2/project2/rosbags"
+      - "/home/group10/Documents/project2-3/project2/rosbags:/workspaces/project2/project2/rosbags"
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:

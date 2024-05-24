@@ -76,7 +76,7 @@ class NumberDetector(Node):
                         return
 
                     # Display results if confidence is high
-                    if confidence > 0.97:
+                    if confidence > 0.96:
                         x, y, w, h = bbox
                         cv2.rectangle(display_frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                         cv2.putText(display_frame, f"{predicted_digit} ({confidence:.2f})", (10, 60),
@@ -173,7 +173,7 @@ class NumberDetector(Node):
 
     def is_number_large_enough(self, contour):
         x, y, w, h = cv2.boundingRect(contour)
-        return w > 150 and h > 150  # Adjust the threshold as needed
+        return w > 80 and h > 100  # Adjust the threshold as needed
 
     def predict(self, model, img):
         try:
