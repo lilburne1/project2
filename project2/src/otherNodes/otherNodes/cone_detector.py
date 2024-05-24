@@ -30,7 +30,7 @@ class ConeDetector(Node):
         )
         self.markers = {}
         self.cone_detected_count = 0
-        self.detection_threshold = 6  # Set your detection threshold here
+        self.detection_threshold = 25  # Set your detection threshold here
         self.marker_id = 0
         self.save_directory = "/photos"
         if not os.path.exists(self.save_directory):
