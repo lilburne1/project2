@@ -33,6 +33,8 @@ class ConeDetector(Node):
         self.detection_threshold = 6  # Set your detection threshold here
         self.marker_id = 0
         self.save_directory = "/photos"
+        if not os.path.exists(self.save_directory):
+            os.makedirs(self.save_directory)
 
     def is_marker_nearby(self):
         try:
@@ -49,7 +51,8 @@ class ConeDetector(Node):
                 if distance < 2.0:  # Define a suitable distance threshold
                     return True
             return False
-        except Exception:
+        except Exception as e:
+            self.get_logger().error(f"Error in is_marker_nearby: {e}")
             return False
 
     def detect_cone(self, msg):
@@ -58,7 +61,8 @@ class ConeDetector(Node):
 
         try:
             bgr_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-        except CvBridgeError:
+        except CvBridgeError as e:
+            self.get_logger().error(f"Error converting image: {e}")
             return
 
         hsv_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2HSV)
@@ -118,9 +122,10 @@ class ConeDetector(Node):
 
             processed_image_msg = self.bridge.cv2_to_imgmsg(bgr_image, encoding="bgr8")
             self.image_publisher.publish(processed_image_msg)
+            self.get_logger().info("Published processed image to 'processed_image' topic.")
             time.sleep(1)
-        except CvBridgeError:
-            pass
+        except CvBridgeError as e:
+            self.get_logger().error(f"Error processing image: {e}")
 
     def publish_cone_marker(self):
         try:
@@ -146,8 +151,8 @@ class ConeDetector(Node):
             self.markers[marker.id] = (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z)
             self.marker_publisher.publish(marker)
             self.publish_marker_array()
-        except Exception:
-            pass
+        except Exception as e:
+            self.get_logger().error(f"Error in publish_cone_marker: {e}")
 
     def publish_marker_array(self):
         marker_array = MarkerArray()
@@ -176,8 +181,8 @@ def main(args=None):
     try:
         node = ConeDetector()
         rclpy.spin(node)
-    except Exception:
-        pass
+    except Exception as e:
+        node.get_logger().error(f"Error in main: {e}")
     finally:
         node.destroy_node()
         rclpy.shutdown()
@@ -185,7 +190,6 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
 
 # import rclpy
 # from rclpy.node import Node
