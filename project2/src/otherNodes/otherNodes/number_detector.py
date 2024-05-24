@@ -173,7 +173,7 @@ class NumberDetector(Node):
 
     def is_number_large_enough(self, contour):
         x, y, w, h = cv2.boundingRect(contour)
-        return w > 70 and h > 100  # Adjust the threshold as needed
+        return w > 80 and h > 100  # Adjust the threshold as needed
 
     def predict(self, model, img):
         try:
