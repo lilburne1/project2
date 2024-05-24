@@ -178,7 +178,7 @@ class NumberDetector(Node):
     def predict(self, model, img):
         try:
             # Invert the image
-            img = cv2.bitwise_not(img)
+            #img = cv2.bitwise_not(img)
 
             # Prepare image for prediction
             img = np.expand_dims(img, axis=0)

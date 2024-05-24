@@ -162,12 +162,12 @@ services:
       - type: bind
         source: /dev/shm
         target: /dev/shm
-      - "/home/group10/Documents/project2-3/project2/rosbags:/workspaces/project2/project2/rosbags"
+      - "/home/group10/Documents/project2-3/project2/rosbags:/rosbags1"
     device_cgroup_rules:
       - 'c *:* mrw'
     environment:
       - ROS_DOMAIN_ID=111
-    command: /bin/bash -c "ros2 bag record -a -o /workspaces/project2-3/project2/rosbags/projectBag"
+    command: /bin/bash -c "ros2 bag record -a -o /rosbags1/projectBag"
   gui_container:
     build:
       context: .
